@@ -13,12 +13,12 @@ public class GameManager : MonoBehaviour
     public void SetCreamApplied()
     {
         creamApplied = true;
-        CheckBookAccess(false);
+        CheckBookAccess(true);
     }
         public void SetCreamReturn()
     {
         creamApplied = false;
-        CheckBookAccess(true);
+        CheckBookAccess(false);
     }
 
     public void UseSponge()

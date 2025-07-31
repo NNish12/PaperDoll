@@ -42,33 +42,34 @@ public class ItemDragController : MonoBehaviour
 
     private IEnumerator DragRoutine()
     {
-
         //если книга неинтерактивна
         TabController.Instance.EnableBook(false);
+        RectTransform rectTransform = currentItem.GetComponent<RectTransform>();
 
         bool dragging = true;
 
         while (dragging)
         {
-            if (Input.GetMouseButton(0))
-            {
-                Vector3 pos = GetMouseWorldPos() + offset;
-                pos.z = 0;
-                currentItem.transform.position = pos;
-            }
+        if (Input.GetMouseButton(0))
+        {
+            Vector3 mousePos = Input.mousePosition;
+            mousePos.z = 0;
+            rectTransform.position = mousePos;
+        }
             else if (Input.GetMouseButtonUp(0))
             {
                 dragging = false;
-
-                if (IsOverFaceZone(currentItem.transform.position))
+                Vector3 worldPos = Input.mousePosition;
+                if (IsOverFaceZone(Camera.main.ScreenToWorldPoint(worldPos)))
                 {
                     //если мы в зоне лица то запускаем анимацию нанесения
                     ItemActionAnimator.Instance.HandleDropAction(currentType, currentItem);
                 }
                 else
                 {
-                    // иначе возвращаем в ноль, но это заглушка, сделать плавно
-                    currentItem.transform.localPosition = Vector3.zero;
+                    // иначе оставляем на месте
+                    rectTransform.position = worldPos;
+                    // currentItem.transform.localPosition = Vector3.zero;
                     TabController.Instance.EnableBook(true);
                 }
             }

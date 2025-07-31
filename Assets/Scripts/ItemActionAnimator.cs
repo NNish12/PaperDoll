@@ -15,9 +15,9 @@ public class ItemActionAnimator : MonoBehaviour
         Instance = this;
     }
 
-//добавить спрайты для всех анимаций
     public void HandleDropAction(ItemType type, GameObject item)
     {
+        //если сбрасываем мышь с предметом типа
         switch (type)
         {
             case ItemType.Cream:
@@ -35,8 +35,10 @@ public class ItemActionAnimator : MonoBehaviour
     IEnumerator ApplyCream()
     {
         yield return new WaitForSeconds(1f);
+        //анимация сброса
         GirlManager.Instance.RemoveAcne();
-        GameManager.Instance.SetCreamReturn();
+        GameManager.Instance.SetCreamApplied();
+
     }
 
 //сделаны только тени
