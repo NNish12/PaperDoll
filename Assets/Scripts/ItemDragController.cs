@@ -12,6 +12,8 @@ public class ItemDragController : MonoBehaviour
 
     public Transform faceZone;
     public LayerMask faceMask;
+    private RectTransform rectTransform;
+    private Vector2 startPos;
 
     public void Init()
     {
@@ -29,7 +31,10 @@ public class ItemDragController : MonoBehaviour
         currentItem = item;
         currentType = type;
 
-        offset = item.transform.position - GetMouseWorldPos();
+        Debug.Log(this.startPos);
+        rectTransform = item.GetComponent<RectTransform>();
+        startPos = rectTransform.anchoredPosition;
+        // offset = item.transform.position - GetMouseWorldPos();
         StartCoroutine(DragRoutine());
     }
 
@@ -44,43 +49,45 @@ public class ItemDragController : MonoBehaviour
     {
         //если книга неинтерактивна
         TabController.Instance.EnableBook(false);
-        RectTransform rectTransform = currentItem.GetComponent<RectTransform>();
-
+        rectTransform = currentItem.GetComponent<RectTransform>();
+        Debug.Log("DragRoutine");
         bool dragging = true;
 
         while (dragging)
         {
-        if (Input.GetMouseButton(0))
-        {
-            Vector3 mousePos = Input.mousePosition;
-            mousePos.z = 0;
-            rectTransform.position = mousePos;
-        }
+            if (Input.GetMouseButton(0))
+            {
+                Vector2 localPoint;
+                //кнвертируем экранную позицию мыши в локальную позицию относительно родительского RectTransform
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform.parent as RectTransform, Input.mousePosition, null, out localPoint);
+
+                rectTransform.anchoredPosition = localPoint;
+            }
             else if (Input.GetMouseButtonUp(0))
             {
                 dragging = false;
-                Vector3 worldPos = Input.mousePosition;
-                if (IsOverFaceZone(Camera.main.ScreenToWorldPoint(worldPos)))
+
+                Vector3 worldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+                if (IsOverFaceZone(worldPos))
                 {
-                    //если мы в зоне лица то запускаем анимацию нанесения
+                    Debug.Log("Крем в зоне лица");
                     ItemActionAnimator.Instance.HandleDropAction(currentType, currentItem);
+                    rectTransform.anchoredPosition = startPos;
                 }
-                else
+                else //иначе если и убрать метод ниже
                 {
-                    // иначе оставляем на месте
-                    rectTransform.position = worldPos;
-                    // currentItem.transform.localPosition = Vector3.zero;
-                    TabController.Instance.EnableBook(true);
+                    rectTransform.anchoredPosition = startPos;
+                    TabController.Instance.EnableBook(false);
                 }
             }
             yield return null;
         }
     }
-
-//проверяем, в зоне ли мы лица с помощью коллайдера и слоя маски на нем
+    //проверяем, в зоне ли мы лица с помощью коллайдера и слоя на нем
     private bool IsOverFaceZone(Vector3 pos)
     {
         Collider2D hit = Physics2D.OverlapPoint(pos, faceMask);
+        Debug.Log("IsOverFaceZone" + hit != null);
         return hit != null;
     }
 }

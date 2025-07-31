@@ -49,10 +49,7 @@ public class TabController : MonoBehaviour
     }
     public void EnableBook(bool isOn)
     {
-        GameManager.Instance.canInteractWithPalette = !isOn;
+        GameManager.Instance.canInteractWithPalette = isOn;
         nonInteractableField.enabled = !isOn;
-        // blushTab.interactable = true;
-        // shadowTab.interactable = true;
-        // lipstickTab.interactable = true;
     }
 }

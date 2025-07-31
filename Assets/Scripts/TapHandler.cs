@@ -23,6 +23,11 @@ public class TapHandler : MonoBehaviour
             List<RaycastResult> results = new List<RaycastResult>();
             graphicRaycaster.Raycast(pointerEvent, results);
 
+            //проверяем попали ли мы в неинтерактивную зону
+            foreach (RaycastResult result in results)
+            {
+                if (result.gameObject.layer == 3) return;
+            }
             foreach (RaycastResult result in results)
             {
                 InteractableObject interactable = result.gameObject.GetComponent<InteractableObject>();
