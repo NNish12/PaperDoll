@@ -40,8 +40,10 @@ public class GirlManager : MonoBehaviour
     //Cream
     public void RemoveAcne()
     {
+        Debug.Log("Удалили акне");
         Acne.SetActive(false);
-        GameManager.Instance.isFaceClean = true;
+        // GameManager.Instance.isFaceClean = true;
+        GameManager.Instance.SetCreamApplied();
     }
 
     //Eyeshadow
@@ -58,7 +60,7 @@ public class GirlManager : MonoBehaviour
     }
 
     //Lipstic
-    public void ApplyLipstick()
+    public void ApplyLipstick(Sprite lips)
     {
         if (lips != null)
             srLips.sprite = lips;
@@ -71,7 +73,7 @@ public class GirlManager : MonoBehaviour
     }
 
     //Blush
-    public void ApplyBlush()
+    public void ApplyBlush(Sprite blush)
     {
         if (blush != null)
             srBlush.sprite = blush;
@@ -92,7 +94,7 @@ public class GirlManager : MonoBehaviour
     }
     public void ReturnAcne()
     {
-        GameManager.Instance.isFaceClean = false;
+        // GameManager.Instance.isFaceClean = false;
         Acne.SetActive(true);
     }
 

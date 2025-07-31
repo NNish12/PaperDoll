@@ -19,18 +19,22 @@ public class TapHandler : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("нажали");
             pointerEvent = new PointerEventData(eventSystem) { position = Input.mousePosition };
             List<RaycastResult> results = new List<RaycastResult>();
             graphicRaycaster.Raycast(pointerEvent, results);
 
+            //проверяем попали ли мы в неинтерактивную зону
+            foreach (RaycastResult result in results)
+            {
+                if (result.gameObject.layer == 3) return;
+            }
             foreach (RaycastResult result in results)
             {
                 InteractableObject interactable = result.gameObject.GetComponent<InteractableObject>();
-                Debug.Log("мы в цикле полученного рейкаста");
+                Debug.Log("Мы в цикле полученного рейкаста");
                 if (interactable != null)
                 {
-                    Debug.Log("нажали и попали в интерактив");
+                    Debug.Log("Попали в интерактив");
                     interactable.OnMouseDown();
                 }
             }

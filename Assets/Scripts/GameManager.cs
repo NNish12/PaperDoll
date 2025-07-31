@@ -7,18 +7,19 @@ public class GameManager : MonoBehaviour
     public bool canInteractWithPalette = false;
     public bool creamApplied = false;
     public bool spongeUsed = false;
-    public bool isFaceClean = false;
+    // public bool isFaceClean = false;
 
     //нужно ли явно задать все стартовые значения
     public void SetCreamApplied()
     {
         creamApplied = true;
-        CheckBookAccess(false);
+        // isFaceClean = true
+        CheckBookAccess(true);
     }
-        public void SetCreamReturn()
+    public void SetCreamReturn()
     {
         creamApplied = false;
-        CheckBookAccess(true);
+        CheckBookAccess(false);
     }
 
     public void UseSponge()
@@ -33,11 +34,13 @@ public class GameManager : MonoBehaviour
         GirlManager.Instance.RemoveMakeup();
     }
 
-    public void CheckBookAccess(bool isActive)
+    public void CheckBookAccess(bool isOn)
     {
-        if (creamApplied && spongeUsed)
-            TabController.Instance.EnableBook(isActive);
-            //потом надо поменять на активный
+        //здесь булевая на использование спонжа
+        // if (creamApplied && spongeUsed)
+        if (creamApplied)
+            TabController.Instance.EnableBook(isOn);
+        //потом надо поменять на активный
     }
     public void Init()
     {
