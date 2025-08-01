@@ -1,10 +1,11 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ItemActionAnimator : MonoBehaviour
 {
     public static ItemActionAnimator Instance;
-
     public void Init()
     {
         if (Instance != this && Instance != null)
@@ -18,11 +19,12 @@ public class ItemActionAnimator : MonoBehaviour
     public void HandleDropAction(ItemType type, GameObject item)
     {
         //отдельно для крема, потому что у него нет передающего спрайта
-        if (type == ItemType.Cream)
+        if (type == ItemType.Cream && !GameManager.Instance.creamApplied)
         {
-            StartCoroutine(ApplyCream());
+            StartCoroutine(ApplyCream(item));
             return;
         }
+        //тут надо сделать метод приема конкретного спрайта и передачи с конкретной палетки 
         Sprite sprite = item.GetComponent<SpriteRenderer>().sprite;
         //если сбрасываем мышь с предметом типа
         switch (type)
@@ -36,11 +38,15 @@ public class ItemActionAnimator : MonoBehaviour
         }
     }
 
-    IEnumerator ApplyCream()
+    IEnumerator ApplyCream(GameObject item)
     {
-        yield return new WaitForSeconds(1f);
-        //анимация сброса
         GirlManager.Instance.RemoveAcne();
+        //анимация сброса
+        item.GetComponent<InteractableObject>().ReturnToStartPos();
+        item.GetOrAddComponent<Image>().raycastTarget = false;
+
+        yield return new WaitForSeconds(1f);
+
     }
 
     //сделаны только тени

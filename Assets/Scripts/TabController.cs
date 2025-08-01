@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class TabController : MonoBehaviour
 {
     public static TabController Instance;
-    [SerializeField] private Image nonInteractableField;
+    [SerializeField] private Image nonInteractableField; 
     [SerializeField] private List<Tab> tabs;
     [SerializeField] private List<Page> pages;
     [SerializeField] private List<Button> uiButtons; // те, на которые кликают
