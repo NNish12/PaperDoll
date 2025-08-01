@@ -8,8 +8,6 @@ public class ItemDragController : MonoBehaviour
     private Camera mainCamera;
     private GameObject currentItem;
     private ItemType currentType;
-    private Vector3 offset;
-
     public Transform faceZone;
     public LayerMask faceMask;
     private RectTransform rectTransform;
@@ -28,13 +26,13 @@ public class ItemDragController : MonoBehaviour
 
     public void StartDrag(GameObject item, ItemType type)
     {
+        //вот здесь может возникнуть косяк с перетаскиванием из-за null
+        if (currentItem != null) return;
         currentItem = item;
         currentType = type;
 
-        Debug.Log(this.startPos);
         rectTransform = item.GetComponent<RectTransform>();
         startPos = rectTransform.anchoredPosition;
-        // offset = item.transform.position - GetMouseWorldPos();
         StartCoroutine(DragRoutine());
     }
 
@@ -50,7 +48,6 @@ public class ItemDragController : MonoBehaviour
         //если книга неинтерактивна
         TabController.Instance.EnableBook(false);
         rectTransform = currentItem.GetComponent<RectTransform>();
-        Debug.Log("DragRoutine");
         bool dragging = true;
 
         while (dragging)
@@ -70,7 +67,6 @@ public class ItemDragController : MonoBehaviour
                 Vector3 worldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
                 if (IsOverFaceZone(worldPos))
                 {
-                    Debug.Log("Крем в зоне лица");
                     ItemActionAnimator.Instance.HandleDropAction(currentType, currentItem);
                     rectTransform.anchoredPosition = startPos;
                 }

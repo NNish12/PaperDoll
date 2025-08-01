@@ -31,7 +31,6 @@ public class TapHandler : MonoBehaviour
             foreach (RaycastResult result in results)
             {
                 InteractableObject interactable = result.gameObject.GetComponent<InteractableObject>();
-                Debug.Log("Мы в цикле полученного рейкаста");
                 if (interactable != null)
                 {
                     Debug.Log("Попали в интерактив");
