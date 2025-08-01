@@ -1,9 +1,13 @@
+
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class FaceZone : MonoBehaviour
 {
     public static FaceZone Instance;
-    public Collider2D faceCollider;
+    // public Collider2D faceCollider;
+    private RectTransform rectTransform;
     public void Init()
     {
         if (Instance != this && Instance != null)
@@ -12,8 +16,19 @@ public class FaceZone : MonoBehaviour
             return;
         }
         Instance = this;
-        
-        faceCollider = GetComponent<Collider2D>();
-        //нужно ли 
+        rectTransform = GetComponent<RectTransform>();
+    }
+
+    public static bool IsOverZone(Vector2 screenPosition)
+    {
+        if (Instance == null) return false;
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            Instance.rectTransform,
+            screenPosition,
+            null,
+            out Vector2 localPoint);
+
+        return Instance.rectTransform.rect.Contains(localPoint);
     }
 }

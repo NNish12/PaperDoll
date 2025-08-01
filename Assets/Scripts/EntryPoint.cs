@@ -8,10 +8,8 @@ public class EntryPoint : MonoBehaviour
     public MakeupManager makeupManager;
     public PlayerHand playerHand;
     public ItemActionAnimator itemActionAnimator;
-    public ItemDragController itemDragController;
     public FaceZone faceZone;
     public TabController tabController;
-    public TapHandler tapHandler;
     private void Awake()
     {
         SetInstance();
@@ -24,8 +22,6 @@ public class EntryPoint : MonoBehaviour
         faceZone.Init();
         tabController.Init();
         itemActionAnimator.Init();
-        itemDragController.Init();
-        tapHandler.Init();
 
     }
 
