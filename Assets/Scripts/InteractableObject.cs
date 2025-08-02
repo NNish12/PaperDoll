@@ -13,19 +13,18 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
     [SerializeField] private GraphicRaycaster graphicRaycaster;
     private CanvasGroup canvasGroup;
     private EventSystem eventSystem;
+    public bool isInteractive = false;
+
 
     private Vector2 startPos;
-    // private Image raycast;
-
+    //массив всех интерактивных добавить в entrypoint
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
         canvas = GetComponentInParent<Canvas>();
         eventSystem = EventSystem.current;
-        // raycast.GetComponent<Image>().raycastTarget = true;
     }
-
     public void OnPointerDown(PointerEventData eventData)
     {
         startPos = rectTransform.anchoredPosition;
@@ -35,18 +34,25 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
 
         foreach (RaycastResult result in results)
         {
-            //можно пропустить слой 3 (книга)
             if (result.gameObject.layer == 9) return;
         }
+        if (itemType == ItemType.Cream && !GameManager.Instance.creamApplied)
+        {
+            //анимация переноса на нейтраль
+            //дальше можно тянуть
+            isInteractive = true;
+        }
     }
-
     public void OnBeginDrag(PointerEventData eventData)
     {
-        canvasGroup.blocksRaycasts = false; // чтобы RaycastTarget могли видеть объекты под предметом
+        if (!isInteractive) return;
+        canvasGroup.blocksRaycasts = false;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (!isInteractive) return;
+
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             canvas.transform as RectTransform,
             eventData.position,

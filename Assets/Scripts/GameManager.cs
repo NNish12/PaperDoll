@@ -6,14 +6,12 @@ public class GameManager : MonoBehaviour
 
     public bool canInteractWithPalette = false;
     public bool creamApplied = false;
-    public bool spongeUsed = false;
-    // public bool isFaceClean = false;
+
 
     //нужно ли явно задать все стартовые значения
     public void SetCreamApplied()
     {
         creamApplied = true;
-        // isFaceClean = true
         CheckBookAccess(true);
     }
     public void SetCreamReturn()
@@ -24,7 +22,6 @@ public class GameManager : MonoBehaviour
 
     public void UseSponge()
     {
-        spongeUsed = true;
         ResetMakeup();
         CheckBookAccess(false);
     }
@@ -37,9 +34,8 @@ public class GameManager : MonoBehaviour
     public void CheckBookAccess(bool isOn)
     {
         //здесь булевая на использование спонжа
-        // if (creamApplied && spongeUsed)
         if (creamApplied)
-            TabController.Instance.EnableBook(isOn);
+            UIcontroller.Instance.EnableBook(isOn);
         //потом надо поменять на активный
     }
     public void Init()
