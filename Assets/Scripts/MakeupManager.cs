@@ -1,19 +1,53 @@
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MakeupManager : MonoBehaviour
 {
+    public GameObject brush;
+    Vector2 startPos;
+    public GameObject eyebrush;
+    Vector2 startEyePos;
+    //заглушка под помаду
+    public GameObject lipstic;
     public static MakeupManager Instance;
-    public Transform chestPosition;
-    public Image[] LipsticsPalette;
     public Sprite[] Lips;
-    public Image[] BrushePalette;
     public Sprite[] BrushSprites;
-    public Image[] EyeshadowPalette;
     public Sprite[] EyeshadowSprites;
+    private Vector2 colorPos;
 
+    //selected принимается исходя из того когда отпустили палец
+    public Sprite selectedSprite;
+    public ItemType selectedType;
+    //метод в котором при попадании в палитру мы смотрим на какой цвет попали курсором,
+    // в таком случае принимаем в себя этот image и смотрим какой у него индекс у массива, такой же индекс передаем в наш спрайт рендерер
+    public void SetColor(ButtonColor color)
+    {
+        int index = color.index;
+        selectedType = color.itemType;
+        colorPos = color.ancoredGlobalPos;
 
+        switch (selectedType)
+        {
+            case ItemType.Eyeshadow:
+                selectedSprite = EyeshadowSprites[index];
+                StartCoroutine(AnimateAndEnableInteraction(brush, ItemType.Eyeshadow));
+                break;
+
+            case ItemType.Brush:
+                selectedSprite = BrushSprites[index];
+                StartCoroutine(AnimateAndEnableInteraction(brush, ItemType.Brush));
+                break;
+
+            case ItemType.Lipstick:
+                selectedSprite = Lips[index];
+                StartCoroutine(AnimateAndEnableInteraction(lipstic, ItemType.Lipstick));
+                break;
+        }
+    }
+    //отдельный метод для помады
+    public void ResetSelectedSprite() => selectedSprite = null;
     public void Init()
     {
         if (Instance != this && Instance != null)
@@ -23,57 +57,34 @@ public class MakeupManager : MonoBehaviour
         }
         Instance = this;
     }
-
-    public void StartShadowRoutine(Vector3 colorPosition)
+    private IEnumerator AnimateAndEnableInteraction(GameObject tool, ItemType type)
     {
-        StartCoroutine(ShadowRoutine(colorPosition));
-    }
-
-    public void StartLipstickRoutine(Vector3 itemPosition)
-    {
-        StartCoroutine(LipstickRoutine(itemPosition));
-    }
-
-    IEnumerator ShadowRoutine(Vector3 colorPosition)
-    {
-        GameManager.Instance.canInteractWithPalette = false;
-
-        yield return PlayerHand.Instance.PlayPickBrushAnimation(colorPosition);
-        PlayerHand.Instance.transform.position = chestPosition.position;
-        //делегат изцчить почему в {} 
-        yield return PlayerHand.Instance.WaitForDragToFace(() =>
+        var interactable = tool.GetComponent<InteractableObject>();
+        interactable.isInteractive = false;
+        switch (type)
         {
-            StartCoroutine(ApplyShadow());
-        });
+            case ItemType.Brush:
+                ItemActionAnimator.Instance.PlayBrushToFace(tool, colorPos, startPos);
+                break;
+            case ItemType.Eyeshadow:
+                ItemActionAnimator.Instance.PlayBrushToFace(tool, colorPos, startEyePos);
+                break;
+
+        }
+        yield return new WaitForSeconds(0.5f); //время анимации
+        ItemActionAnimator.Instance.HandleDropAction(type, tool);
+
+        yield return new WaitForSeconds(1.0f); //gодождать пока закончится анимация
+
+        //оключаем интерактив
+        interactable.isInteractive = true;
     }
-
-    IEnumerator ApplyShadow()
+    private void Start()
     {
-        yield return PlayerHand.Instance.PlayApplyShadowAnimation();
-        // GirlManager.Instance.ApplyShadow();
-        PlayerHand.Instance.ReturnToDefault();
-        GameManager.Instance.canInteractWithPalette = true;
-    }
+        //взять коррдинаты родителя
+        startPos = brush.GetComponent<RectTransform>().anchoredPosition;
+        startEyePos = brush.GetComponent<RectTransform>().anchoredPosition;
 
-    IEnumerator LipstickRoutine(Vector3 itemPosition)
-    {
-        GameManager.Instance.canInteractWithPalette = false;
-
-        yield return PlayerHand.Instance.PlayTakeLipstick(itemPosition);
-        PlayerHand.Instance.transform.position = chestPosition.position;
-
-        yield return PlayerHand.Instance.WaitForDragToFace(() =>
-        {
-            StartCoroutine(ApplyLipstick());
-        });
-    }
-
-    IEnumerator ApplyLipstick()
-    {
-        yield return PlayerHand.Instance.PlayApplyLipstickAnimation();
-        // GirlManager.Instance.ApplyLipstick();
-        PlayerHand.Instance.ReturnToDefault();
-        GameManager.Instance.canInteractWithPalette = true;
     }
 }
 

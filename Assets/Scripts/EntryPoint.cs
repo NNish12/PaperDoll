@@ -8,7 +8,7 @@ public class EntryPoint : MonoBehaviour
     public MakeupManager makeupManager;
     public ItemActionAnimator itemActionAnimator;
     public FaceZone faceZone;
-    public TabController tabController;
+    public UIcontroller uiController;
     public SpongeController spongeController;
     private void Awake()
     {
@@ -18,7 +18,7 @@ public class EntryPoint : MonoBehaviour
         girlManager.Init();
         makeupManager.Init();
         faceZone.Init();
-        tabController.Init();
+        uiController.Init();
         itemActionAnimator.Init();
     }
     private void SetInstance()
