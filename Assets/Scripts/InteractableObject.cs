@@ -8,7 +8,7 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
 {
     public ItemType itemType;
 
-    private Canvas canvas; // для правильного позиционирования
+    private Canvas canvas; //для правильного позиционирования
     private RectTransform rectTransform;
     [SerializeField] private GraphicRaycaster graphicRaycaster;
     private CanvasGroup canvasGroup;
@@ -38,8 +38,10 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
         }
         if (itemType == ItemType.Cream && !GameManager.Instance.creamApplied)
         {
-            //анимация переноса на нейтраль
-            //дальше можно тянуть
+            // RectTransform tool = this.GetComponent<RectTransform>();
+            // ItemActionAnimator.Instance.MoveToHandZone(tool);
+            // //анимация переноса на нейтраль
+            // //дальше можно тянуть
             isInteractive = true;
         }
     }
@@ -53,13 +55,16 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
     {
         if (!isInteractive) return;
 
+        RectTransform parentRect = rectTransform.parent as RectTransform;
+
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            canvas.transform as RectTransform,
+            parentRect,
             eventData.position,
             eventData.pressEventCamera,
             out Vector2 localPoint);
 
         rectTransform.anchoredPosition = localPoint;
+
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -69,7 +74,7 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
         if (FaceZone.IsOverZone(eventData.position))
         {
             Debug.Log("Предмет отпущен над лицом");
-            ItemActionAnimator.Instance.HandleDropAction(itemType, this.gameObject);
+            ItemAnimator.Instance.HandleDropAction(itemType, this.gameObject);
         }
         else
         {

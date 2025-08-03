@@ -6,7 +6,7 @@ public class EntryPoint : MonoBehaviour
     public GameManager gameManager;
     public GirlManager girlManager;
     public MakeupManager makeupManager;
-    public ItemActionAnimator itemActionAnimator;
+    public ItemAnimator itemActionAnimator;
     public FaceZone faceZone;
     public UIcontroller uiController;
     public SpongeController spongeController;

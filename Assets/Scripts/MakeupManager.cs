@@ -1,90 +1,106 @@
 using System.Collections;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MakeupManager : MonoBehaviour
 {
-    public GameObject brush;
-    Vector2 startPos;
-    public GameObject eyebrush;
-    Vector2 startEyePos;
-    //заглушка под помаду
-    public GameObject lipstic;
     public static MakeupManager Instance;
+
+    [Header("Tools")]
+    public GameObject brush;
+    public GameObject lipstick;
+    public GameObject eyebrush;
+
+    [Header("Sprites")]
     public Sprite[] Lips;
     public Sprite[] BrushSprites;
     public Sprite[] EyeshadowSprites;
-    private Vector2 colorPos;
 
-    //selected принимается исходя из того когда отпустили палец
+    private Vector2 startBrushPos;
+    private Vector2 startEyePos;
+
     public Sprite selectedSprite;
     public ItemType selectedType;
-    //метод в котором при попадании в палитру мы смотрим на какой цвет попали курсором,
-    // в таком случае принимаем в себя этот image и смотрим какой у него индекс у массива, такой же индекс передаем в наш спрайт рендерер
-    public void SetColor(ButtonColor color)
+
+    private Vector2 buttonPos;
+
+    private void Start()
     {
-        int index = color.index;
-        selectedType = color.itemType;
-        colorPos = color.ancoredGlobalPos;
-
-        switch (selectedType)
-        {
-            case ItemType.Eyeshadow:
-                selectedSprite = EyeshadowSprites[index];
-                StartCoroutine(AnimateAndEnableInteraction(brush, ItemType.Eyeshadow));
-                break;
-
-            case ItemType.Brush:
-                selectedSprite = BrushSprites[index];
-                StartCoroutine(AnimateAndEnableInteraction(brush, ItemType.Brush));
-                break;
-
-            case ItemType.Lipstick:
-                selectedSprite = Lips[index];
-                StartCoroutine(AnimateAndEnableInteraction(lipstic, ItemType.Lipstick));
-                break;
-        }
+        startBrushPos = brush.GetComponent<RectTransform>().anchoredPosition;
+        startEyePos = eyebrush.GetComponent<RectTransform>().anchoredPosition;
+        SetAnimatorEnabled(false);
     }
-    //отдельный метод для помады
-    public void ResetSelectedSprite() => selectedSprite = null;
+
     public void Init()
     {
-        if (Instance != this && Instance != null)
+        if (Instance != null && Instance != this)
         {
             Destroy(this);
             return;
         }
         Instance = this;
     }
-    private IEnumerator AnimateAndEnableInteraction(GameObject tool, ItemType type)
+
+    public void SetColor(ButtonColor button)
     {
-        var interactable = tool.GetComponent<InteractableObject>();
-        interactable.isInteractive = false;
-        switch (type)
+        if (!GameManager.Instance.canInteractWithPalette) return;
+
+        selectedType = button.itemType;
+        buttonPos = button.GetComponent<RectTransform>().anchoredPosition;
+
+        switch (selectedType)
         {
-            case ItemType.Brush:
-                ItemActionAnimator.Instance.PlayBrushToFace(tool, colorPos, startPos);
-                break;
             case ItemType.Eyeshadow:
-                ItemActionAnimator.Instance.PlayBrushToFace(tool, colorPos, startEyePos);
+                selectedSprite = EyeshadowSprites[button.index];
+                StartCoroutine(UseTool(eyebrush, ItemType.Eyeshadow, startEyePos, button.GetComponent<RectTransform>()));
                 break;
 
+            case ItemType.Brush:
+                selectedSprite = BrushSprites[button.index];
+                StartCoroutine(UseTool(brush, ItemType.Brush, startBrushPos, button.GetComponent<RectTransform>()));
+                break;
+
+            case ItemType.Lipstick:
+                selectedSprite = Lips[button.index];
+                Vector2 startLipPos = lipstick.GetComponent<RectTransform>().anchoredPosition;
+                StartCoroutine(UseTool(lipstick, ItemType.Lipstick, startLipPos, button.GetComponent<RectTransform>()));
+                break;
         }
-        yield return new WaitForSeconds(0.5f); //время анимации
-        ItemActionAnimator.Instance.HandleDropAction(type, tool);
 
-        yield return new WaitForSeconds(1.0f); //gодождать пока закончится анимация
-
-        //оключаем интерактив
-        interactable.isInteractive = true;
+        GameManager.Instance.canInteractWithPalette = false;
     }
-    private void Start()
+
+    private IEnumerator UseTool(GameObject toolChild, ItemType type, Vector2 startPos, RectTransform target)
     {
-        //взять коррдинаты родителя
-        startPos = brush.GetComponent<RectTransform>().anchoredPosition;
-        startEyePos = brush.GetComponent<RectTransform>().anchoredPosition;
+        var interactable = toolChild.GetComponent<InteractableObject>();
+        if (interactable != null) interactable.isInteractive = false;
 
+        string animationName = type == ItemType.Lipstick ? "ApplyLipstick" : "ApplyPalette";
+        GameObject toolParent = toolChild.transform.parent.gameObject;
+        RectTransform toolParentRect = toolParent.GetComponent<RectTransform>();
+
+        Vector2 localTargetPos = GetTargetPosition(target, toolParentRect);
+        localTargetPos = new Vector2(localTargetPos.x, localTargetPos.y - 150f);
+        ItemAnimator.Instance.PlayToolToFace(toolParent, toolChild, localTargetPos, startPos, animationName);
+
+        yield return new WaitForSeconds(10f);
     }
-}
 
+
+    public void ResetSelectedSprite()
+    {
+        selectedSprite = null;
+    }
+
+    private void SetAnimatorEnabled(bool isOn)
+    {
+        eyebrush.GetComponent<Animator>().enabled = isOn;
+    }
+    private Vector2 GetTargetPosition(RectTransform fromRect, RectTransform toolParentRect)
+    {
+        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(null, fromRect.position);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(toolParentRect.parent as RectTransform, screenPoint, null, out Vector2 localPoint);
+        return localPoint;
+    }
+
+}
