@@ -5,154 +5,133 @@ using UnityEngine.UI;
 public class ItemActionAnimator : MonoBehaviour
 {
     public static ItemActionAnimator Instance;
+
     private GameManager gameManager;
     private GirlManager girlManager;
-    public Animator animator;
-    public RectTransform handZone;
 
+    public RectTransform handZone;
+    public RectTransform creamZone;
     private GameObject currentTool;
-    private Vector2 startPos;
+    private Vector2 startToolPos;
+
+    public float y = 160f;
+
     public void Init()
     {
-        if (Instance != this && Instance != null)
+        if (Instance != null && Instance != this)
         {
             Destroy(this);
             return;
         }
+
         Instance = this;
         gameManager = GameManager.Instance;
         girlManager = GirlManager.Instance;
     }
 
-    public void HandleDropAction(ItemType type, GameObject item)
+    public void PlayToolToFace(GameObject toolParent, GameObject toolChild, Vector2 targetPos, Vector2 startPos, string animationName)
     {
-        if (type == ItemType.Cream && !GameManager.Instance.creamApplied)
+        currentTool = toolChild;
+        startToolPos = startPos;
+
+        RectTransform parentRect = toolParent.GetComponent<RectTransform>();
+        RectTransform toolRect = toolChild.GetComponent<RectTransform>();
+
+        StartCoroutine(PlayToolSequence(toolChild, parentRect, toolRect, targetPos, animationName));
+    }
+
+    private IEnumerator PlayToolSequence(GameObject toolChild, RectTransform parentRect, RectTransform toolRect, Vector2 targetPos, string animationName)
+    {
+        Animator animator = toolChild.GetComponent<Animator>();
+        animator.enabled = false;
+
+        // yield return StartCoroutine(IncreaseScale(toolRect));
+        yield return StartCoroutine(MoveTo(parentRect, targetPos, 0.5f));
+
+        yield return new WaitForSeconds(0.2f);
+
+        animator.enabled = true;
+        animator.Play(animationName);
+        //заглушка для конца анимации, добавить секунды
+        yield return new WaitForSeconds(2f);
+        yield return StartCoroutine(MoveTo(parentRect, handZone.anchoredPosition, 0.5f));
+        yield return new WaitForSeconds(1f);
+        toolRect.gameObject.GetComponent<InteractableObject>().isInteractive = true;
+        animator.enabled = false;
+    }
+    public void MoveToHandZone(RectTransform tool)
+    {
+        Vector2 target = creamZone.anchoredPosition;
+        StartCoroutine(MoveTo(tool, target, 0.5f));
+    }
+
+    private IEnumerator MoveTo(RectTransform rectTransform, Vector2 targetPos, float duration)
+    {
+        Vector2 start = rectTransform.anchoredPosition;
+        float t = 0f;
+
+        while (t < duration)
         {
-            StartCoroutine(ApplyCream(item));
-            return;
-        }
-        switch (type)
-        {
-            case ItemType.Eyeshadow:
-                StartCoroutine(ApplyEyeshadow());
-                break;
-            case ItemType.Brush:
-                // StartCoroutine(ApplyBlush());
-                break;
-            case ItemType.Lipstick:
-                StartCoroutine(ApplyLipstick());
-                break;
-        }
-    }
-
-    IEnumerator ApplyCream(GameObject item)
-    {
-        girlManager.RemoveAcne();
-        //анимация сброса на лицо
-        item.GetComponent<InteractableObject>().ReturnToStartPos();
-        item.GetComponent<Image>().raycastTarget = false;
-        // анимация возврата на место
-        item.GetComponent<InteractableObject>().isInteractive = false;
-        yield return new WaitForSeconds(1f);
-    }
-    IEnumerator ApplyEyeshadow()
-    {
-        yield return new WaitForSeconds(0.7f);
-        // girlManager.ApplyShadow();
-        gameManager.canInteractWithPalette = true;
-    }
-    IEnumerator ApplyLipstick()
-    {
-        yield return new WaitForSeconds(0.7f);
-        // girlManager.ApplyLipstick();
-        gameManager.canInteractWithPalette = true;
-    }
-    IEnumerator ApplyBlush(Sprite sprite)
-    {
-        yield return new WaitForSeconds(0.7f);
-        girlManager.ApplyBlush(sprite);
-        gameManager.canInteractWithPalette = true;
-    }
-    public void PlayBrushToFace(GameObject tool, Vector2 targetPos, Vector2 startPos)
-    {
-        //плавное перемещение к зоне 
-        StartCoroutine(PlayBrush(tool, targetPos, startPos));
-        tool.GetComponent<InteractableObject>().isInteractive = true;
-    }
-    private IEnumerator PlayBrush(GameObject tool, Vector2 targetPos, Vector2 startPos)
-    {
-        animator = tool.GetComponent<Animator>();
-
-        currentTool = tool;
-        this.startPos = startPos;
-        StartCoroutine(IncreeseScale(tool.GetComponent<RectTransform>()));
-        yield return new WaitForSeconds(1f);
-        //возвратом секунд
-
-        //проблема с перемещением
-        yield return StartCoroutine(MoveToPosition(tool.transform.parent.GetComponent<RectTransform>(), targetPos, 0.5f));
-        animator.Play("ApplyPalette");
-        yield return new WaitForSeconds(1f);
-        yield return StartCoroutine(MoveToPosition(tool.transform.parent.GetComponent<RectTransform>(), handZone.anchoredPosition, 0.5f));
-        // тут передача управления потом уже применение и возврат
-
-    }
-    private IEnumerator SetColorToFace()
-    {
-        animator.Play("ApplyToFace");
-        yield return new WaitForSeconds(1f); //cколько сек
-        yield return StartCoroutine(MoveToPosition(currentTool.transform.parent.GetComponent<RectTransform>(), startPos, 0.5f));
-
-        //включить интерактивность
-        currentTool.GetComponent<InteractableObject>().isInteractive = true;
-        //после применения обязательно 
-        GameManager.Instance.canInteractWithPalette = true;
-    }
-
-    IEnumerator WaitForReturnToCase()
-    {
-        animator.Play("IncreeseScale");
-        yield return new WaitForSeconds(1f);
-
-    }
-
-    IEnumerator MoveToPosition(RectTransform rectTransform, Vector2 targetPos, float duration)
-    {
-        Vector2 startPos = rectTransform.anchoredPosition;
-        float elapsed = 0f;
-
-        while (elapsed < duration)
-        {
-            rectTransform.anchoredPosition = Vector2.Lerp(startPos, targetPos, elapsed / duration);
-            elapsed += Time.deltaTime;
+            rectTransform.anchoredPosition = Vector2.Lerp(start, targetPos, t / duration);
+            t += Time.deltaTime;
             yield return null;
         }
+
         rectTransform.anchoredPosition = targetPos;
     }
 
-    public IEnumerator IncreeseScale(RectTransform target, float scaleTo = 1.2f, float duration = 0.3f)
+    private IEnumerator IncreaseScale(RectTransform target, float scaleTo = 1.2f, float duration = 1f)
     {
         Vector3 startScale = Vector3.one;
-        Vector3 targetScale = Vector3.one * scaleTo;
+        Vector3 endScale = Vector3.one * scaleTo;
+        float t = 0f;
 
-        float elapsed = 0f;
-
-        while (elapsed < duration)
+        while (t < duration)
         {
-            target.localScale = Vector3.Lerp(startScale, targetScale, elapsed / duration);
-            elapsed += Time.deltaTime;
+            target.localScale = Vector3.Lerp(startScale, endScale, t / duration);
+            t += Time.deltaTime;
             yield return null;
         }
-        target.localScale = targetScale;
-        // elapsed = 0f;
-        // while (elapsed < duration)
-        // {
-        //     target.localScale = Vector3.Lerp(targetScale, startScale, elapsed / duration);
-        //     elapsed += Time.deltaTime;
-        //     yield return null;
-        // }
-        // target.localScale = startScale;
+
+        target.localScale = endScale;
     }
 
+    public void HandleDropAction(ItemType type, GameObject item)
+    {
+        switch (type)
+        {
+            case ItemType.Cream:
+                if (!gameManager.creamApplied)
+                    StartCoroutine(ApplyCream(item));
+                break;
 
+            case ItemType.Eyeshadow:
+                StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyShadow(MakeupManager.Instance.selectedSprite)));
+                break;
+
+            case ItemType.Lipstick:
+                StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyLipstick(MakeupManager.Instance.selectedSprite)));
+                break;
+
+            case ItemType.Brush:
+                StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyBlush(MakeupManager.Instance.selectedSprite)));
+                break;
+        }
+    }
+
+    private IEnumerator ApplyCream(GameObject item)
+    {
+        girlManager.RemoveAcne();
+        item.GetComponent<InteractableObject>().ReturnToStartPos();
+        item.GetComponent<InteractableObject>().isInteractive = false;
+        item.GetComponent<Image>().raycastTarget = false;
+        yield return new WaitForSeconds(1f);
+    }
+
+    private IEnumerator ApplyAndUnlock(System.Action action)
+    {
+        yield return new WaitForSeconds(0.7f);
+        action?.Invoke();
+        gameManager.canInteractWithPalette = true;
+    }
 }

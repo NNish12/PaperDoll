@@ -1,12 +1,8 @@
-
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class FaceZone : MonoBehaviour
 {
     public static FaceZone Instance;
-    // public Collider2D faceCollider;
     private RectTransform rectTransform;
     public void Init()
     {
