@@ -74,7 +74,7 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
         if (FaceZone.IsOverZone(eventData.position))
         {
             Debug.Log("Предмет отпущен над лицом");
-            ItemActionAnimator.Instance.HandleDropAction(itemType, this.gameObject);
+            ItemAnimator.Instance.HandleDropAction(itemType, this.gameObject);
         }
         else
         {

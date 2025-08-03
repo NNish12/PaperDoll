@@ -2,9 +2,9 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ItemActionAnimator : MonoBehaviour
+public class ItemAnimator : MonoBehaviour
 {
-    public static ItemActionAnimator Instance;
+    public static ItemAnimator Instance;
 
     private GameManager gameManager;
     private GirlManager girlManager;
@@ -45,15 +45,12 @@ public class ItemActionAnimator : MonoBehaviour
         Animator animator = toolChild.GetComponent<Animator>();
         animator.enabled = false;
 
-        // yield return StartCoroutine(IncreaseScale(toolRect));
+        yield return StartCoroutine(IncreaseScale(parentRect));
         yield return StartCoroutine(MoveTo(parentRect, targetPos, 0.5f));
-
-        yield return new WaitForSeconds(0.2f);
 
         animator.enabled = true;
         animator.Play(animationName);
-        //заглушка для конца анимации, добавить секунды
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(2.1f); //заглушка по времени до конца анимации 
         yield return StartCoroutine(MoveTo(parentRect, handZone.anchoredPosition, 0.5f));
         yield return new WaitForSeconds(1f);
         toolRect.gameObject.GetComponent<InteractableObject>().isInteractive = true;

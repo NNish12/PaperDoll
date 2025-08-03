@@ -81,7 +81,7 @@ public class MakeupManager : MonoBehaviour
 
         Vector2 localTargetPos = GetTargetPosition(target, toolParentRect);
         localTargetPos = new Vector2(localTargetPos.x, localTargetPos.y - 150f);
-        ItemActionAnimator.Instance.PlayToolToFace(toolParent, toolChild, localTargetPos, startPos, animationName);
+        ItemAnimator.Instance.PlayToolToFace(toolParent, toolChild, localTargetPos, startPos, animationName);
 
         yield return new WaitForSeconds(10f);
     }
