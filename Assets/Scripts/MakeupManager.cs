@@ -16,7 +16,7 @@ public class MakeupManager : MonoBehaviour
     public Sprite[] BrushSprites;
     public Sprite[] EyeshadowSprites;
 
-    private Vector2 startBrushPos;
+    public Vector2 startBrushPos;
     private Vector2 startEyePos;
 
     public Sprite selectedSprite;
@@ -26,7 +26,7 @@ public class MakeupManager : MonoBehaviour
 
     private void Start()
     {
-        startBrushPos = brush.GetComponent<RectTransform>().anchoredPosition;
+        startBrushPos = brush.transform.parent.GetComponent<RectTransform>().anchoredPosition;
         startEyePos = eyebrush.GetComponent<RectTransform>().anchoredPosition;
         SetAnimatorEnabled(false);
     }
@@ -89,7 +89,8 @@ public class MakeupManager : MonoBehaviour
 
     public void ResetSelectedSprite()
     {
-        selectedSprite = null;
+        if (selectedSprite != null)
+            selectedSprite = null;
     }
 
     private void SetAnimatorEnabled(bool isOn)
