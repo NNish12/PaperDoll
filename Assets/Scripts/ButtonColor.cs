@@ -1,3 +1,4 @@
+using Unity.Collections;
 using UnityEngine;
 
 public class ButtonColor : MonoBehaviour
@@ -6,9 +7,9 @@ public class ButtonColor : MonoBehaviour
     public ItemType itemType;
     public void ReturnIndex()
     {
-        if (GameManager.Instance.canInteractWithPalette == false) return;
-        // GameManager.Instance.canInteractWithPalette = false;
-        Debug.Log("Return " + index);
+        // Debug.Log("GameManager.Instance.CanInteractWithPalette " + GameManager.Instance.CanInteractWithPalette);
+        if (GameManager.Instance.CanInteractWithPalette == false) return;
         MakeupManager.Instance.SetColor(this);
+        UIcontroller.Instance.EnableBook(false);
     }
 }

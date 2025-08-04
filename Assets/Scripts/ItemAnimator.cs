@@ -54,7 +54,7 @@ public class ItemAnimator : MonoBehaviour
         toolRect.gameObject.GetComponent<InteractableObject>().isInteractive = true;
         animator.enabled = false;
     }
-    public void MoveToHandZone(RectTransform tool)
+    public void MoveToHandCreamZone(RectTransform tool)
     {
         Vector2 target = creamZone.anchoredPosition;
         StartCoroutine(MoveTo(tool, target, 0.5f));
@@ -96,22 +96,25 @@ public class ItemAnimator : MonoBehaviour
         switch (type)
         {
             case ItemType.Cream:
+
                 if (!gameManager.creamApplied)
                     StartCoroutine(ApplyCream(item));
                 break;
 
             case ItemType.Eyeshadow:
+                if (currentTool == null) return;
                 StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyShadow(MakeupManager.Instance.selectedSprite)));
                 break;
 
             case ItemType.Lipstick:
+                if (currentTool == null) return;
                 StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyLipstick(MakeupManager.Instance.selectedSprite)));
                 break;
 
             case ItemType.Brush:
+                if (currentTool == null) return;
                 StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyBlush(MakeupManager.Instance.selectedSprite)));
                 //анимация нанесения
-                //возврат кисти на место
                 break;
         }
     }
@@ -122,23 +125,24 @@ public class ItemAnimator : MonoBehaviour
         item.GetComponent<InteractableObject>().ReturnToStartPos();
         item.GetComponent<InteractableObject>().isInteractive = false;
         item.GetComponent<Image>().raycastTarget = false;
+        UIcontroller.Instance.EnableBook(true);
         yield return new WaitForSeconds(1f);
     }
 
 
     private IEnumerator ApplyAndUnlock(Action action)
     {
+        //не анимации а корутины с передвижением
         Animator animator = currentTool.GetComponent<Animator>();
         animator.enabled = true;
-
         animator.Play("ApplyPalette"); //по какой причине анимация не проигрывается?
-        //анимация в принципе неп роигрывается больше 1 раза
+
         yield return new WaitForSeconds(3f);
         action?.Invoke();
-        gameManager.canInteractWithPalette = true;
         animator.enabled = false;
         yield return StartCoroutine(MoveTo(parentRect, MakeupManager.Instance.startBrushPos, 2f));
         currentTool.GetComponent<InteractableObject>().isInteractive = false;
+        UIcontroller.Instance.EnableBook(true);
 
     }
 }

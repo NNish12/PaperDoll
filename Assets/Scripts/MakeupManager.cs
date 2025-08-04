@@ -43,7 +43,7 @@ public class MakeupManager : MonoBehaviour
 
     public void SetColor(ButtonColor button)
     {
-        if (!GameManager.Instance.canInteractWithPalette) return;
+        if (!GameManager.Instance.CanInteractWithPalette) return;
 
         selectedType = button.itemType;
         buttonPos = button.GetComponent<RectTransform>().anchoredPosition;
@@ -67,7 +67,7 @@ public class MakeupManager : MonoBehaviour
                 break;
         }
 
-        GameManager.Instance.canInteractWithPalette = false;
+        GameManager.Instance.CanInteractWithPalette = false;
     }
 
     private IEnumerator UseTool(GameObject toolChild, ItemType type, Vector2 startPos, RectTransform target)

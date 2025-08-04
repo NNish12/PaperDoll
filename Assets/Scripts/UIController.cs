@@ -8,9 +8,7 @@ public class UIcontroller : MonoBehaviour
     [SerializeField] private Image nonInteractableField; 
     [SerializeField] private List<Tab> tabs;
     [SerializeField] private List<Page> pages;
-    [SerializeField] private List<Button> uiButtons; //те, на которые кликают
-
-    // это должен быть uicontroller
+    [SerializeField] private List<Button> uiButtons;
     private int currentIndex = -1;
 
     private void Start()
@@ -35,7 +33,7 @@ public class UIcontroller : MonoBehaviour
         }
 
         currentIndex = index;
-        //если переключение то сбросим спрайт 
+        //если переключение то сбросим выбранный спрайт 
         MakeupManager.Instance.ResetSelectedSprite();
     }
     public void Init()
@@ -50,7 +48,9 @@ public class UIcontroller : MonoBehaviour
     }
     public void EnableBook(bool isOn)
     {
-        GameManager.Instance.canInteractWithPalette = isOn;
+        GameManager.Instance.CanInteractWithPalette = isOn;
+        Debug.Log("nonInteractableField.enabled = !isOn "+ nonInteractableField.enabled);
         nonInteractableField.enabled = !isOn;
+        Debug.Log("nonInteractableField.enabled = !isOn "+ nonInteractableField.enabled);
     }
 }

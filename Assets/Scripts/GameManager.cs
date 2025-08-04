@@ -1,15 +1,22 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements.Experimental;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    public bool canInteractWithPalette = false;
+    [SerializeField] private bool canInteractWithPalette = false;
+    public bool CanInteractWithPalette
+    {
+        get { return canInteractWithPalette; }
+        set
+        {
+            Debug.Log("can interact" + value);
+            canInteractWithPalette = value;
+        }
+    }
     public bool creamApplied = false;
-
-
-    //нужно ли явно задать все стартовые значения
     public void SetCreamApplied()
     {
         creamApplied = true;
