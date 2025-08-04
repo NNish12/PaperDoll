@@ -2583,6 +2583,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 85bbd129d0bf243d0b285c211d8bf98e, type: 3}
   - {fileID: 21300000, guid: 20a795e7cb11547ceb00e63c8f9ab01d, type: 3}
   - {fileID: 21300000, guid: f3baeb29396f84f6b8c06434794794a7, type: 3}
+  startBrushPos: {x: 0, y: 0}
   selectedSprite: {fileID: 0}
   selectedType: 0
 --- !u!1001 &565482606
@@ -3123,10 +3124,10 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_HighlightedColor: {r: 0.9056604, g: 0.8501246, b: 0.8501246, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -7193,7 +7194,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1450868339}
   m_Layer: 5
-  m_Name: RectTransformBrush
+  m_Name: ParentBrush
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8608,7 +8609,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   handZone: {fileID: 881243878}
   creamZone: {fileID: 314601442}
-  y: 150
 --- !u!95 &1780185300
 Animator:
   serializedVersion: 5
@@ -9357,10 +9357,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Acne: {fileID: 668594742}
-  srBlush: {fileID: 0}
-  srLips: {fileID: 0}
-  srEyeshadow: {fileID: 0}
-  containsCosmetics: 1
+  srBlush: {fileID: 1237371932}
+  srLips: {fileID: 64488664}
+  srEyeshadow: {fileID: 542303713}
 --- !u!224 &2047897562 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5140254653435671428, guid: 909d5b8c9b8e744c98bdc6f6b98b7a43, type: 3}

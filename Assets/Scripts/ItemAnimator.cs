@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,10 +13,8 @@ public class ItemAnimator : MonoBehaviour
     public RectTransform handZone;
     public RectTransform creamZone;
     private GameObject currentTool;
-    private Vector2 startToolPos;
-
-    public float y = 160f;
-
+    private GameObject currentParent;
+    private RectTransform parentRect;
     public void Init()
     {
         if (Instance != null && Instance != this)
@@ -31,12 +30,11 @@ public class ItemAnimator : MonoBehaviour
 
     public void PlayToolToFace(GameObject toolParent, GameObject toolChild, Vector2 targetPos, Vector2 startPos, string animationName)
     {
-        currentTool = toolChild;
-        startToolPos = startPos;
-
-        RectTransform parentRect = toolParent.GetComponent<RectTransform>();
+        parentRect = toolParent.GetComponent<RectTransform>();
         RectTransform toolRect = toolChild.GetComponent<RectTransform>();
+        currentTool = toolChild;
 
+        currentParent = toolParent;
         StartCoroutine(PlayToolSequence(toolChild, parentRect, toolRect, targetPos, animationName));
     }
 
@@ -112,6 +110,8 @@ public class ItemAnimator : MonoBehaviour
 
             case ItemType.Brush:
                 StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyBlush(MakeupManager.Instance.selectedSprite)));
+                //анимация нанесения
+                //возврат кисти на место
                 break;
         }
     }
@@ -125,10 +125,20 @@ public class ItemAnimator : MonoBehaviour
         yield return new WaitForSeconds(1f);
     }
 
-    private IEnumerator ApplyAndUnlock(System.Action action)
+
+    private IEnumerator ApplyAndUnlock(Action action)
     {
-        yield return new WaitForSeconds(0.7f);
+        Animator animator = currentTool.GetComponent<Animator>();
+        animator.enabled = true;
+
+        animator.Play("ApplyPalette"); //по какой причине анимация не проигрывается?
+        //анимация в принципе неп роигрывается больше 1 раза
+        yield return new WaitForSeconds(3f);
         action?.Invoke();
         gameManager.canInteractWithPalette = true;
+        animator.enabled = false;
+        yield return StartCoroutine(MoveTo(parentRect, MakeupManager.Instance.startBrushPos, 2f));
+        currentTool.GetComponent<InteractableObject>().isInteractive = false;
+
     }
 }

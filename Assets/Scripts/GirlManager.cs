@@ -16,8 +16,23 @@ public class GirlManager : MonoBehaviour
     [SerializeField] private SpriteRenderer srBlush;
     [SerializeField] private SpriteRenderer srLips;
     [SerializeField] private SpriteRenderer srEyeshadow;
-    public bool containsCosmetics = false;
-
+    private bool containsCosmetics = false;
+    public bool ContainsCosmetics
+    {
+        get { return containsCosmetics; }
+        set
+        {
+            if (value == true)
+                sponge.SetSpongeInteractable(true);
+            else sponge.SetSpongeInteractable(false);
+        }
+    }
+    private void SetNullMakeUp()
+    {
+        srBlush.sprite = null;
+        srLips.sprite = null;
+        srEyeshadow.sprite = null;
+    }
     public void Init()
     {
         if (Instance != this && Instance != null)
@@ -27,9 +42,11 @@ public class GirlManager : MonoBehaviour
         }
         Instance = this;
         sponge = SpongeController.Instance;
+        DefaultState();
     }
     public void DefaultState()
     {
+        SetNullMakeUp();
         RemoveMakeup();
         ReturnAcne();
     }
@@ -42,37 +59,45 @@ public class GirlManager : MonoBehaviour
     }
     public void ApplyShadow(Sprite shadow)
     {
-        if (shadow != null)
+        if (srEyeshadow.sprite != null)
             srEyeshadow.sprite = shadow;
+        CheckCosmetic();
     }
 
     public void ClearShadow()
     {
-        if (eyeshadow != null)
-            eyeshadow = null;
+        if (srEyeshadow.sprite != null)
+            srEyeshadow.sprite = null;
         CheckCosmetic();
     }
     public void ApplyLipstick(Sprite lips)
     {
-        if (lips != null)
+        if (srLips.sprite != null)
             srLips.sprite = lips;
+        CheckCosmetic();
     }
     public void ClearLipstick()
     {
-        if (lips != null)
-            lips = null;
+        if (srLips.sprite != null)
+            srLips.sprite = null;
         CheckCosmetic();
     }
     public void ApplyBlush(Sprite blush)
     {
-        if (blush != null)
+        if (srBlush.sprite != null)
             srBlush.sprite = blush;
-        containsCosmetics = true;
+        ContainsCosmetics = true;
+        CheckCosmetic();
     }
     public void ClearBlush()
     {
-        if (blush != null)
-            blush = null;
+        if (srBlush.sprite != null)
+        {
+            Debug.Log("bush не равен налл иначе поменять на рендерер");
+            srBlush.sprite = null;
+
+        }
+
         CheckCosmetic();
     }
     public void RemoveMakeup()
@@ -80,7 +105,7 @@ public class GirlManager : MonoBehaviour
         ClearBlush();
         ClearLipstick();
         ClearShadow();
-        containsCosmetics = false;
+        ContainsCosmetics = false;
         sponge.SetSpongeInteractable(false);
     }
     public void ReturnAcne()
@@ -93,13 +118,13 @@ public class GirlManager : MonoBehaviour
         //тут объект может быть null
         if (srBlush.sprite == null && srEyeshadow.sprite == null && srLips.sprite == null)
         {
-            containsCosmetics = false;
-            sponge.SetSpongeInteractable(false);
+            ContainsCosmetics = false;
+            // sponge.SetSpongeInteractable(false);
         }
         else
         {
-            containsCosmetics = true;
-            sponge.SetSpongeInteractable(true);
+            ContainsCosmetics = true;
+            // sponge.SetSpongeInteractable(true);
         }
 
     }

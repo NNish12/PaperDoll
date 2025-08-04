@@ -12,14 +12,10 @@ public class SpongeController : MonoBehaviour
     private bool usingSponge = false;
     void Start()
     {
-        rectTransform = GetComponent<RectTransform>();
-        startPos = rectTransform.anchoredPosition;
-        animator = GetComponent<Animator>();
-        button = GetComponent<Button>();
-        SetSpongeInteractable(false);
+
     }
     public void SetSpongeInteractable(bool isOn) => button.interactable = isOn;
-    public void Init()
+    private void Awake()
     {
         if (Instance != this && Instance != null)
         {
@@ -27,32 +23,36 @@ public class SpongeController : MonoBehaviour
             return;
         }
         Instance = this;
+
+        rectTransform = GetComponent<RectTransform>();
+        startPos = rectTransform.anchoredPosition;
+        animator = GetComponent<Animator>();
+        button = GetComponent<Button>();
+        SetSpongeInteractable(false);
     }
     public void UseSponge()
     {
-        if (GirlManager.Instance.containsCosmetics == true && usingSponge == false)
+        if (GirlManager.Instance.ContainsCosmetics == true && usingSponge == false)
         {
             GameManager.Instance.canInteractWithPalette = false;
             SetSpongeInteractable(false);
             usingSponge = true;
             StartCoroutine(ApplySponge());
             //запуск анимации и корутины в которой будет установка булевой для завершения
-            //корутина
             GirlManager.Instance.RemoveMakeup();
 
-            //не нужно
-            rectTransform.anchoredPosition = startPos;
+            // //не нужно
+            // rectTransform.anchoredPosition = startPos;
             GameManager.Instance.canInteractWithPalette = true;
         }
     }
     IEnumerator ApplySponge()
     {
         animator.Play("SpongeAnimation");
-        //анимация
         //particlesystem
         //вставить время анимации
         yield return new WaitForSeconds(3f);
         usingSponge = false;
-        SetSpongeInteractable(true);
     }
+    public void Init() { }
 }

@@ -64,7 +64,6 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
             out Vector2 localPoint);
 
         rectTransform.anchoredPosition = localPoint;
-
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -73,6 +72,7 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
 
         if (FaceZone.IsOverZone(eventData.position))
         {
+            isInteractive = false;
             Debug.Log("Предмет отпущен над лицом");
             ItemAnimator.Instance.HandleDropAction(itemType, this.gameObject);
         }

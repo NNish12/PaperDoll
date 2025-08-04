@@ -14,8 +14,8 @@ public class EntryPoint : MonoBehaviour
     {
         SetInstance();
         gameManager.Init();
-        spongeController.Init();
         girlManager.Init();
+        spongeController.Init();
         makeupManager.Init();
         faceZone.Init();
         uiController.Init();
