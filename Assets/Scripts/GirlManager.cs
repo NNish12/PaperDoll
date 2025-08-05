@@ -55,7 +55,6 @@ public class GirlManager : MonoBehaviour
     }
     public void RemoveAcne()
     {
-        Debug.Log("Удалили акне");
         Acne.SetActive(false);
         //анимация
         GameManager.Instance.SetCreamApplied();
@@ -96,15 +95,12 @@ public class GirlManager : MonoBehaviour
     {
         if (srBlush.sprite != null)
         {
-            Debug.Log("bush не равен налл иначе поменять на рендерер");
             srBlush.sprite = null;
-            Debug.Log("равен null");
         }
         CheckCosmetic();
     }
     public void RemoveMakeup()
     {
-        Debug.Log("remove");
         ClearBlush();
         ClearLipstick();
         ClearShadow();

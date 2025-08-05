@@ -1,7 +1,5 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements.Experimental;
-
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
@@ -12,7 +10,6 @@ public class GameManager : MonoBehaviour
         get { return canInteractWithPalette; }
         set
         {
-            Debug.Log("can interact" + value);
             canInteractWithPalette = value;
         }
     }
