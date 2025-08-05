@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EntryPoint : MonoBehaviour
@@ -10,6 +11,7 @@ public class EntryPoint : MonoBehaviour
     public FaceZone faceZone;
     public UIcontroller uiController;
     public SpongeController spongeController;
+    public UIRaycastDebugger raycaster;
     private void Awake()
     {
         SetInstance();
@@ -20,6 +22,7 @@ public class EntryPoint : MonoBehaviour
         faceZone.Init();
         uiController.Init();
         itemActionAnimator.Init();
+        raycaster.Init();
     }
     private void SetInstance()
     {

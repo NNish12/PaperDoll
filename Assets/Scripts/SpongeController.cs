@@ -32,22 +32,22 @@ public class SpongeController : MonoBehaviour
     }
     public void UseSponge()
     {
+        Debug.Log("not use, contains cosmetics " + GirlManager.Instance.ContainsCosmetics + "using sponge" + usingSponge);
         if (GirlManager.Instance.ContainsCosmetics == true && usingSponge == false)
         {
-            GameManager.Instance.canInteractWithPalette = false;
+            Debug.Log("use");
+            UIcontroller.Instance.EnableBook(false);
             SetSpongeInteractable(false);
             usingSponge = true;
             StartCoroutine(ApplySponge());
             //запуск анимации и корутины в которой будет установка булевой для завершения
             GirlManager.Instance.RemoveMakeup();
-
-            // //не нужно
-            // rectTransform.anchoredPosition = startPos;
-            GameManager.Instance.canInteractWithPalette = true;
+            UIcontroller.Instance.EnableBook(true);
         }
     }
     IEnumerator ApplySponge()
     {
+        Debug.Log("animator");
         animator.Play("SpongeAnimation");
         //particlesystem
         //вставить время анимации

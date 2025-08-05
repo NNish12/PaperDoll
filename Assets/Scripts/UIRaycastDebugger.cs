@@ -6,11 +6,13 @@ using UnityEngine.UI;
 public class UIRaycastDebugger : MonoBehaviour
 {
     public GraphicRaycaster raycaster;
+    public static UIRaycastDebugger Instance;
     public EventSystem eventSystem;
+    public bool raycast = false;
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && raycast)
         {
             PointerEventData pointerData = new PointerEventData(eventSystem)
             {
@@ -34,4 +36,17 @@ public class UIRaycastDebugger : MonoBehaviour
             }
         }
     }
+
+    public void Init()
+    {
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(this);
+                return;
+            }
+            Instance = this;
+        }
+    }
 }
+

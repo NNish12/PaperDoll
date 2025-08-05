@@ -9,12 +9,12 @@ public class ItemAnimator : MonoBehaviour
 
     private GameManager gameManager;
     private GirlManager girlManager;
-
     public RectTransform handZone;
     public RectTransform creamZone;
-    private GameObject currentTool;
-    private GameObject currentParent;
-    private RectTransform parentRect;
+    public RectTransform faceZone;
+    private RectTransform tool;
+    private Vector2 startPos;
+
     public void Init()
     {
         if (Instance != null && Instance != this)
@@ -22,57 +22,80 @@ public class ItemAnimator : MonoBehaviour
             Destroy(this);
             return;
         }
-
         Instance = this;
         gameManager = GameManager.Instance;
         girlManager = GirlManager.Instance;
     }
-
-    public void PlayToolToFace(GameObject toolParent, GameObject toolChild, Vector2 targetPos, Vector2 startPos, string animationName)
+    public void PlayToolToFace(RectTransform tool)
     {
-        parentRect = toolParent.GetComponent<RectTransform>();
-        RectTransform toolRect = toolChild.GetComponent<RectTransform>();
-        currentTool = toolChild;
-
-        currentParent = toolParent;
-        StartCoroutine(PlayToolSequence(toolChild, parentRect, toolRect, targetPos, animationName));
+        StartCoroutine(PlayToolSequence(tool));
     }
 
-    private IEnumerator PlayToolSequence(GameObject toolChild, RectTransform parentRect, RectTransform toolRect, Vector2 targetPos, string animationName)
+    private IEnumerator PlayToolSequence(RectTransform tool)
     {
-        Animator animator = toolChild.GetComponent<Animator>();
-        animator.enabled = false;
-
-        yield return StartCoroutine(IncreaseScale(parentRect));
-        yield return StartCoroutine(MoveTo(parentRect, targetPos, 0.5f));
-
-        animator.enabled = true;
-        animator.Play(animationName);
-        yield return new WaitForSeconds(2.1f); //заглушка по времени до конца анимации 
-        yield return StartCoroutine(MoveTo(parentRect, handZone.anchoredPosition, 0.5f));
-        yield return new WaitForSeconds(1f);
-        toolRect.gameObject.GetComponent<InteractableObject>().isInteractive = true;
-        animator.enabled = false;
+        startPos = tool.anchoredPosition;
+        yield return StartCoroutine(IncreaseScale(tool, scaleTo: 1.2f));
+        yield return StartCoroutine(MoveTo(tool, MakeupManager.Instance.button, null, 0.5f));
+        yield return StartCoroutine(MoveRightLeftUI(tool, 100f, 50f));
+        yield return StartCoroutine(MoveTo(tool, handZone, null, 0.5f));
+        tool.gameObject.GetComponent<InteractableObject>().isInteractive = true;
     }
-    public void MoveToHandZone(RectTransform tool)
+    public void MoveToHandCreamZone(RectTransform tool)
     {
-        Vector2 target = creamZone.anchoredPosition;
-        StartCoroutine(MoveTo(tool, target, 0.5f));
+        StartCoroutine(MoveTo(tool, creamZone, null, 0.5f));
+    }
+    private IEnumerator ApplyLipstic(RectTransform rectTransform, Vector2 targetPos, float duration = 1f)
+    {
+        //куда таргет?
+        rectTransform.GetComponent<Button>().enabled = false;
+        yield return StartCoroutine(MoveTo(rectTransform, handZone, null, duration));
+        rectTransform.GetComponent<InteractableObject>().enabled = true;
+    }
+    private IEnumerator ApplyAndUnlock(Action action)
+    {
+        //применяем корутину с apply animation
+        //применяется спрайт
+        //возвращаем на место 
+        tool.GetComponent<InteractableObject>().isInteractive = false;
+        yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), faceZone, null, 1.5f));
+        yield return StartCoroutine(MoveRightLeftUI(tool, 100f, 50f));
+        action();
+        yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), null, startPos, 1f));
+        yield return StartCoroutine(IncreaseScale(tool, scaleTo: 1f));
+
+        UIcontroller.Instance.EnableBook(true);
     }
 
-    private IEnumerator MoveTo(RectTransform rectTransform, Vector2 targetPos, float duration)
+    private IEnumerator MoveTo(RectTransform item, RectTransform target = null, Vector2? targetPosition = null, float duration = 1f)
     {
-        Vector2 start = rectTransform.anchoredPosition;
+        Vector2 finalTargetPos;
+
+        if (target != null)
+        {
+            Vector3 worldTargetPos = target.position;
+            RectTransform parent = item.parent as RectTransform;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, RectTransformUtility.WorldToScreenPoint(null, worldTargetPos), null, out finalTargetPos);
+        }
+        else if (targetPosition.HasValue)
+        {
+            finalTargetPos = targetPosition.Value;
+        }
+        else
+        {
+            yield break;
+        }
+
+        Vector2 start = item.anchoredPosition;
         float t = 0f;
 
         while (t < duration)
         {
-            rectTransform.anchoredPosition = Vector2.Lerp(start, targetPos, t / duration);
+            item.anchoredPosition = Vector2.Lerp(start, finalTargetPos, t / duration);
             t += Time.deltaTime;
             yield return null;
         }
 
-        rectTransform.anchoredPosition = targetPos;
+        item.anchoredPosition = finalTargetPos;
     }
 
     private IEnumerator IncreaseScale(RectTransform target, float scaleTo = 1.2f, float duration = 1f)
@@ -93,25 +116,28 @@ public class ItemAnimator : MonoBehaviour
 
     public void HandleDropAction(ItemType type, GameObject item)
     {
+        tool = item.GetComponent<RectTransform>();
         switch (type)
         {
             case ItemType.Cream:
+
                 if (!gameManager.creamApplied)
                     StartCoroutine(ApplyCream(item));
                 break;
 
             case ItemType.Eyeshadow:
+                if (tool == null) return;
                 StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyShadow(MakeupManager.Instance.selectedSprite)));
                 break;
 
             case ItemType.Lipstick:
+                if (tool == null) return;
                 StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyLipstick(MakeupManager.Instance.selectedSprite)));
                 break;
 
             case ItemType.Brush:
+                if (tool == null) return;
                 StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyBlush(MakeupManager.Instance.selectedSprite)));
-                //анимация нанесения
-                //возврат кисти на место
                 break;
         }
     }
@@ -122,23 +148,30 @@ public class ItemAnimator : MonoBehaviour
         item.GetComponent<InteractableObject>().ReturnToStartPos();
         item.GetComponent<InteractableObject>().isInteractive = false;
         item.GetComponent<Image>().raycastTarget = false;
+        UIcontroller.Instance.EnableBook(true);
         yield return new WaitForSeconds(1f);
     }
 
-
-    private IEnumerator ApplyAndUnlock(Action action)
+    public IEnumerator MoveRightLeftUI(RectTransform tool, float speed, float distance)
     {
-        Animator animator = currentTool.GetComponent<Animator>();
-        animator.enabled = true;
+        int repeats = 2;
+        Vector2 startPos = tool.anchoredPosition;
 
-        animator.Play("ApplyPalette"); //по какой причине анимация не проигрывается?
-        //анимация в принципе неп роигрывается больше 1 раза
-        yield return new WaitForSeconds(3f);
-        action?.Invoke();
-        gameManager.canInteractWithPalette = true;
-        animator.enabled = false;
-        yield return StartCoroutine(MoveTo(parentRect, MakeupManager.Instance.startBrushPos, 2f));
-        currentTool.GetComponent<InteractableObject>().isInteractive = false;
+        for (int i = 0; i < repeats; i++)
+        {
+            Vector2 targetRight = startPos + Vector2.right * distance;
+            while (Vector2.Distance(tool.anchoredPosition, targetRight) > 0.01f)
+            {
+                tool.anchoredPosition = Vector2.MoveTowards(tool.anchoredPosition, targetRight, speed * Time.deltaTime);
+                yield return null;
+            }
 
+            while (Vector2.Distance(tool.anchoredPosition, startPos) > 0.01f)
+            {
+                tool.anchoredPosition = Vector2.MoveTowards(tool.anchoredPosition, startPos, speed * Time.deltaTime);
+                yield return null;
+            }
+        }
     }
 }
+public enum HandleZone { CreamZone, Handle, Face, None }

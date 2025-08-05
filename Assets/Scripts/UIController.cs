@@ -5,13 +5,12 @@ using System.Collections.Generic;
 public class UIcontroller : MonoBehaviour
 {
     public static UIcontroller Instance;
-    [SerializeField] private Image nonInteractableField; 
+    [SerializeField] private Image nonInteractableField;
     [SerializeField] private List<Tab> tabs;
     [SerializeField] private List<Page> pages;
-    [SerializeField] private List<Button> uiButtons; //те, на которые кликают
-
-    // это должен быть uicontroller
+    [SerializeField] private List<Button> uiButtons;
     private int currentIndex = -1;
+    public Vector2 MousePos { get; set; }
 
     private void Start()
     {
@@ -35,9 +34,9 @@ public class UIcontroller : MonoBehaviour
         }
 
         currentIndex = index;
-        //если переключение то сбросим спрайт 
         MakeupManager.Instance.ResetSelectedSprite();
     }
+    
     public void Init()
     {
         if (Instance != null && Instance != this)
@@ -48,9 +47,10 @@ public class UIcontroller : MonoBehaviour
         Instance = this;
         EnableBook(false);
     }
+
     public void EnableBook(bool isOn)
     {
-        GameManager.Instance.canInteractWithPalette = isOn;
+        GameManager.Instance.CanInteractWithPalette = isOn;
         nonInteractableField.enabled = !isOn;
     }
 }
