@@ -44,14 +44,11 @@ public class MakeupManager : MonoBehaviour
         switch (selectedType)
         {
             case ItemType.Eyeshadow:
-                // startDragItemPos = startEyePos;
                 selectedSprite = EyeshadowSprites[colorButton.index];
-                //тут был старт драг айтем позицио
                 StartCoroutine(UseTool(eyebrush, button));
                 break;
 
             case ItemType.Brush:
-                // startDragItemPos = startBrushPos;
                 selectedSprite = BrushSprites[colorButton.index];
                 StartCoroutine(UseTool(brush, button));
                 break;

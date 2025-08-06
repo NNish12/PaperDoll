@@ -36,7 +36,7 @@ public class ItemAnimator : MonoBehaviour
         startPos = tool.anchoredPosition;
         yield return StartCoroutine(IncreaseScale(tool, scaleTo: 1.2f));
         yield return StartCoroutine(MoveTo(tool, MakeupManager.Instance.button, null, 0.5f));
-        yield return StartCoroutine(MoveRightLeftUI(tool, 100f, 50f));
+        yield return StartCoroutine(MoveRightLeftUI(tool, 150f, 50f));
         yield return StartCoroutine(MoveTo(tool, handZone, null, 0.5f));
         tool.gameObject.GetComponent<InteractableObject>().isInteractive = true;
     }
@@ -53,12 +53,9 @@ public class ItemAnimator : MonoBehaviour
     }
     private IEnumerator ApplyAndUnlock(Action action)
     {
-        //применяем корутину с apply animation
-        //применяется спрайт
-        //возвращаем на место 
         tool.GetComponent<InteractableObject>().isInteractive = false;
-        yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), faceZone, null, 1.5f));
-        yield return StartCoroutine(MoveRightLeftUI(tool, 100f, 50f));
+        yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), faceZone, null, 0.3f));
+        yield return StartCoroutine(MoveRightLeftUI(tool, 220f, 50f));
         action();
         yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), null, startPos, 1f));
         yield return StartCoroutine(IncreaseScale(tool, scaleTo: 1f));
@@ -66,7 +63,7 @@ public class ItemAnimator : MonoBehaviour
         UIcontroller.Instance.EnableBook(true);
     }
 
-    private IEnumerator MoveTo(RectTransform item, RectTransform target = null, Vector2? targetPosition = null, float duration = 1f)
+    public IEnumerator MoveTo(RectTransform item, RectTransform target = null, Vector2? targetPosition = null, float duration = 1f)
     {
         Vector2 finalTargetPos;
 
@@ -152,7 +149,7 @@ public class ItemAnimator : MonoBehaviour
         yield return new WaitForSeconds(1f);
     }
 
-    public IEnumerator MoveRightLeftUI(RectTransform tool, float speed, float distance)
+    private IEnumerator MoveRightLeftUI(RectTransform tool, float speed, float distance)
     {
         int repeats = 2;
         Vector2 startPos = tool.anchoredPosition;
@@ -173,5 +170,6 @@ public class ItemAnimator : MonoBehaviour
             }
         }
     }
+
 }
 public enum HandleZone { CreamZone, Handle, Face, None }
