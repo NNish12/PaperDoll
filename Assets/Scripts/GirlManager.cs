@@ -105,7 +105,6 @@ public class GirlManager : MonoBehaviour
         ClearLipstick();
         ClearShadow();
         ContainsCosmetics = false;
-        sponge.SetSpongeInteractable(false);
     }
     public void ReturnAcne()
     {
