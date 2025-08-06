@@ -170,6 +170,39 @@ public class ItemAnimator : MonoBehaviour
             }
         }
     }
+    public void ApplySponge()
+    {
+        StartCoroutine(SpongeApply());
+    }
+    private IEnumerator SpongeApply()
+    {
+        RectTransform spongeRect = SpongeController.Instance.spongeRect;
+        SpongeController.Instance.usingSponge = true;
+        yield return StartCoroutine(MoveTo(spongeRect, faceZone, null, 1f));
+        yield return StartCoroutine(RotateInCircle(spongeRect, 360f, 40f));
+        yield return StartCoroutine(MoveTo(spongeRect, null, SpongeController.Instance.startPos, 1f));
+        //particlesystem
+        yield return new WaitForSeconds(1f);
+        SpongeController.Instance.usingSponge = false;
+    }
+    public IEnumerator RotateInCircle(RectTransform rect, float speed, float radius)
+    {
+        Vector2 center = rect.anchoredPosition;
+        float angle = 0f;
+        int rotations = 2;
+        float totalAngle = 360f * rotations;
 
+        while (angle < totalAngle)
+        {
+            angle += speed * Time.deltaTime;
+            float rad = angle * Mathf.Deg2Rad;
+            float x = center.x + Mathf.Cos(rad) * radius;
+            float y = center.y + Mathf.Sin(rad) * radius;
+
+            rect.anchoredPosition = new Vector2(x, y);
+            yield return null;
+        }
+        rect.anchoredPosition = center + new Vector2(radius, 0);
+    }
 }
 public enum HandleZone { CreamZone, Handle, Face, None }
