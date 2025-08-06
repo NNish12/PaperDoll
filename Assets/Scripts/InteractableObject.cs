@@ -38,6 +38,7 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
     {
         //захват с сильной задержкой и дерганьем
         if (!isInteractive) return;
+        transform.SetAsLastSibling();
         canvasGroup.blocksRaycasts = false;
     }
 
