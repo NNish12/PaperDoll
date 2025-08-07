@@ -8,6 +8,7 @@ public class GirlManager : MonoBehaviour
 
     [Header("Face state")]
     public GameObject Acne;
+    public GameObject Dirt;
     private SpongeController sponge;
     [SerializeField] private SpriteRenderer srBlush;
     [SerializeField] private SpriteRenderer srLips;
@@ -51,11 +52,12 @@ public class GirlManager : MonoBehaviour
     {
         SetNullMakeUp();
         RemoveMakeup();
-        ReturnAcne();
+        ReturnAcneAdnDirt();
     }
     public void RemoveAcne()
     {
         Acne.SetActive(false);
+        Dirt.SetActive(false);
         //анимация
         GameManager.Instance.SetCreamApplied();
     }
@@ -106,9 +108,10 @@ public class GirlManager : MonoBehaviour
         ClearShadow();
         ContainsCosmetics = false;
     }
-    public void ReturnAcne()
+    public void ReturnAcneAdnDirt()
     {
         Acne.SetActive(true);
+        Dirt.SetActive(true);
     }
     //тут дублирование
     public void CheckCosmetic()
