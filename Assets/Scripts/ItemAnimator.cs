@@ -181,7 +181,7 @@ public class ItemAnimator : MonoBehaviour
         item.GetComponent<InteractableObject>().isInteractive = false;
         item.GetComponent<Image>().raycastTarget = false;
         UIcontroller.Instance.EnableBook(true);
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.2f);
     }
 
     private IEnumerator MoveRightLeftUI(RectTransform tool, float speed, float distance, int count = 1)
@@ -221,7 +221,7 @@ public class ItemAnimator : MonoBehaviour
         yield return StartCoroutine(RotateInCircle(spongeRect, 690f, 40f));
         yield return StartCoroutine(MoveTo(spongeRect, null, SpongeController.Instance.startPos, 1f));
         //particlesystem
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.2f);
         SpongeController.Instance.usingSponge = false;
     }
     public IEnumerator RotateInCircle(RectTransform rect, float speed, float radius)

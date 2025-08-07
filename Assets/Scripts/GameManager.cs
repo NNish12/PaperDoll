@@ -38,10 +38,8 @@ public class GameManager : MonoBehaviour
 
     public void CheckBookAccess(bool isOn)
     {
-        //здесь булевая на использование спонжа
         if (creamApplied)
             UIcontroller.Instance.EnableBook(isOn);
-        //потом надо поменять на активный
     }
     public void Init()
     {
