@@ -67,7 +67,6 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
         {
 
             isInteractive = false;
-            Debug.Log("Предмет отпущен над лицом");
             ItemAnimator.Instance.HandleDropAction(itemType, this.gameObject);
         }
         else

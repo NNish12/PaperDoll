@@ -65,14 +65,11 @@ public class MakeupManager : MonoBehaviour
     private IEnumerator UseLipstic(RectTransform button)
     {
         ItemAnimator.Instance.PlayLipstic(button);
-        //yield никак не проявляется, нужно ли убрать?
-        yield return new WaitForSeconds(1f);
+        yield return null;
     }
 
     private IEnumerator UseTool(RectTransform tool, RectTransform target)
     {
-        //здесь как раз надо будет добавить смещение на 150f
-        // Vector2 targetPosOffset = new Vector2(targetPos.x, targetPos.y - 150f);
         ItemAnimator.Instance.PlayToolToFace(tool);
         //yield никак не проявляется, нуно ли убрать?
         yield return new WaitForSeconds(10f);
