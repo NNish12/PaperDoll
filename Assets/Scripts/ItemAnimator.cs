@@ -12,8 +12,11 @@ public class ItemAnimator : MonoBehaviour
     public RectTransform creamZone;
     public RectTransform faceZone;
     public RectTransform lipZone;
+    public RectTransform eyebshadowZone;
+    public RectTransform brushZone;
     private RectTransform tool;
     private Vector2 startPos;
+    private ItemType currentType;
     public void Init()
     {
         if (Instance != null && Instance != this)
@@ -29,6 +32,7 @@ public class ItemAnimator : MonoBehaviour
     public void HandleDropAction(ItemType type, GameObject item)
     {
         tool = item.GetComponent<RectTransform>();
+        currentType = type;
         switch (type)
         {
             case ItemType.Cream:
@@ -93,12 +97,14 @@ public class ItemAnimator : MonoBehaviour
         yield return StartCoroutine(MoveTo(tool, null, startPos, duration: 1f));
         yield return StartCoroutine(IncreaseScale(tool, scaleTo: 1f));
         tool.GetComponent<ButtonColor>().SetInteractableObjectButton(false);
+        UIcontroller.Instance.EnableBook(true);
     }
 
     private IEnumerator ApplyAndUnlock(Action action)
     {
         tool.GetComponent<InteractableObject>().isInteractive = false;
-        yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), faceZone, null, 0.5f));
+
+        yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), currentType == ItemType.Brush ? brushZone : eyebshadowZone, null, 0.5f));
         yield return StartCoroutine(MoveRightLeftUI(tool, 220f, 50f));
         action();
         yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), null, startPos, 1f));
@@ -119,7 +125,16 @@ public class ItemAnimator : MonoBehaviour
         {
             Vector3 worldTargetPos = target.position;
             RectTransform parent = item.parent as RectTransform;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, RectTransformUtility.WorldToScreenPoint(null, worldTargetPos), null, out finalTargetPos);
+
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                parent,
+                RectTransformUtility.WorldToScreenPoint(null, worldTargetPos),
+                null,
+                out finalTargetPos
+            );
+
+            float itemHeight = item.rect.height;
+            finalTargetPos.y -= itemHeight / 2f;
         }
         else if (targetPosition.HasValue)
         {
