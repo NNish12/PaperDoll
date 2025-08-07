@@ -46,16 +46,16 @@ public class ItemAnimator : MonoBehaviour
                 StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyShadow(MakeupManager.Instance.selectedSprite)));
                 break;
 
-            case ItemType.Lipstick:
-                if (tool == null) return;
-                //здесь без делегата
-                StartCoroutine(ApplyLipstiсAndUnlock(() => girlManager.ApplyLipstick(MakeupManager.Instance.selectedSprite)));
-                break;
-
             case ItemType.Brush:
                 if (tool == null) return;
                 StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyBlush(MakeupManager.Instance.selectedSprite)));
                 break;
+                
+            case ItemType.Lipstick:
+                if (tool == null) return;
+                StartCoroutine(ApplyLipstiсAndUnlock(() => girlManager.ApplyLipstick(MakeupManager.Instance.selectedSprite)));
+                break;
+
         }
     }
     private IEnumerator PlayLipsticSequence(RectTransform lipstic)
@@ -76,7 +76,7 @@ public class ItemAnimator : MonoBehaviour
         startPos = tool.anchoredPosition;
         yield return StartCoroutine(IncreaseScale(tool, scaleTo: 1.2f));
         yield return StartCoroutine(MoveTo(tool, MakeupManager.Instance.button, null, 0.5f));
-        yield return StartCoroutine(MoveRightLeftUI(tool, 150f, 50f));
+        yield return StartCoroutine(MoveRightLeftUI(tool, 140f, 30f, count: 1));
         yield return StartCoroutine(MoveTo(tool, handZone, null, 0.5f));
         interactable.isInteractive = true;
     }
@@ -92,7 +92,7 @@ public class ItemAnimator : MonoBehaviour
     private IEnumerator ApplyLipstiсAndUnlock(Action action)
     {
         yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), lipZone, null, 0.7f));
-        yield return StartCoroutine(MoveRightLeftUI(tool, 150f, 30f));
+        yield return StartCoroutine(MoveRightLeftUI(tool, 150f, 15f, count: 2));
         action();
         yield return StartCoroutine(MoveTo(tool, null, startPos, duration: 1f));
         yield return StartCoroutine(IncreaseScale(tool, scaleTo: 1f));
@@ -105,7 +105,7 @@ public class ItemAnimator : MonoBehaviour
         tool.GetComponent<InteractableObject>().isInteractive = false;
 
         yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), currentType == ItemType.Brush ? brushZone : eyebshadowZone, null, 0.5f));
-        yield return StartCoroutine(MoveRightLeftUI(tool, 220f, 50f));
+        yield return StartCoroutine(MoveRightLeftUI(tool, 680f, 80f, count: 2));
         action();
         yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), null, startPos, 1f));
         yield return StartCoroutine(IncreaseScale(tool, scaleTo: 1f));
@@ -158,7 +158,7 @@ public class ItemAnimator : MonoBehaviour
         item.anchoredPosition = finalTargetPos;
     }
 
-    private IEnumerator IncreaseScale(RectTransform target, float scaleTo = 1.2f, float duration = 1f)
+    private IEnumerator IncreaseScale(RectTransform target, float scaleTo = 1.2f, float duration = 0.7f)
     {
         Vector3 startScale = Vector3.one;
         Vector3 endScale = Vector3.one * scaleTo;
@@ -184,27 +184,31 @@ public class ItemAnimator : MonoBehaviour
         yield return new WaitForSeconds(1f);
     }
 
-    private IEnumerator MoveRightLeftUI(RectTransform tool, float speed, float distance)
+    private IEnumerator MoveRightLeftUI(RectTransform tool, float speed, float distance, int count = 1)
     {
-        int repeats = 2;
-        Vector2 startPos = tool.anchoredPosition;
-
-        for (int i = 0; i < repeats; i++)
+        Vector2 centerPos = tool.anchoredPosition;
+        Vector2 rightPos = centerPos + Vector2.right * distance;
+        Vector2 leftPos = centerPos + Vector2.left * distance;
+        for (int i = 0; i < count; i++)
         {
-            Vector2 targetRight = startPos + Vector2.right * distance;
-            while (Vector2.Distance(tool.anchoredPosition, targetRight) > 0.01f)
-            {
-                tool.anchoredPosition = Vector2.MoveTowards(tool.anchoredPosition, targetRight, speed * Time.deltaTime);
-                yield return null;
-            }
-
-            while (Vector2.Distance(tool.anchoredPosition, startPos) > 0.01f)
-            {
-                tool.anchoredPosition = Vector2.MoveTowards(tool.anchoredPosition, startPos, speed * Time.deltaTime);
-                yield return null;
-            }
+            yield return StartCoroutine(MoveToPosition(tool, rightPos, speed));
+            yield return StartCoroutine(MoveToPosition(tool, centerPos, speed));
+            yield return StartCoroutine(MoveToPosition(tool, leftPos, speed));
+            yield return StartCoroutine(MoveToPosition(tool, centerPos, speed));
         }
     }
+
+    private IEnumerator MoveToPosition(RectTransform tool, Vector2 targetPos, float speed)
+    {
+        while (Vector2.Distance(tool.anchoredPosition, targetPos) > 0.01f)
+        {
+            tool.anchoredPosition = Vector2.MoveTowards(tool.anchoredPosition, targetPos, speed * Time.deltaTime);
+            yield return null;
+        }
+
+        tool.anchoredPosition = targetPos;
+    }
+
     public void ApplySponge()
     {
         StartCoroutine(SpongeApply());
