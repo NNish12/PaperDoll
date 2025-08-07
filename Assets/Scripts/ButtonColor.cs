@@ -8,7 +8,6 @@ public class ButtonColor : MonoBehaviour
     private InteractableObject interactableObject;
     public void ReturnIndex()
     {
-
         if (GameManager.Instance.CanInteractWithPalette == false) return;
         MakeupManager.Instance.SetColor(this);
         UIcontroller.Instance.EnableBook(false);
@@ -21,5 +20,11 @@ public class ButtonColor : MonoBehaviour
             interactableObject = GetComponent<InteractableObject>();
             interactableObject.enabled = false;
         }
+    }
+
+    public void SetInteractableObjectButton(bool ison)
+    {
+        interactableObject.enabled = ison;
+        interactableObject.isInteractive = ison;
     }
 }

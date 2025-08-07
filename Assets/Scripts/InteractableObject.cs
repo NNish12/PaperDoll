@@ -12,10 +12,12 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
     private CanvasGroup canvasGroup;
     private EventSystem eventSystem;
     private Vector2 startPos;
+
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
+
         eventSystem = EventSystem.current;
     }
     public void OnPointerDown(PointerEventData eventData)
@@ -33,6 +35,7 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
         {
             isInteractive = true;
         }
+
     }
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -45,8 +48,7 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
     public void OnDrag(PointerEventData eventData)
     {
         if (!isInteractive) return;
-
-        RectTransform parentRect = rectTransform.parent as RectTransform;
+        RectTransform parentRect = rectTransform.parent.GetComponent<RectTransform>();
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             parentRect,
