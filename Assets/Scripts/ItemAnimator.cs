@@ -6,15 +6,14 @@ using UnityEngine.UI;
 public class ItemAnimator : MonoBehaviour
 {
     public static ItemAnimator Instance;
-
     private GameManager gameManager;
     private GirlManager girlManager;
     public RectTransform handZone;
     public RectTransform creamZone;
     public RectTransform faceZone;
+    public RectTransform lipZone;
     private RectTransform tool;
     private Vector2 startPos;
-
     public void Init()
     {
         if (Instance != null && Instance != this)
@@ -26,41 +25,90 @@ public class ItemAnimator : MonoBehaviour
         gameManager = GameManager.Instance;
         girlManager = GirlManager.Instance;
     }
-    public void PlayToolToFace(RectTransform tool)
+
+    public void HandleDropAction(ItemType type, GameObject item)
     {
-        StartCoroutine(PlayToolSequence(tool));
+        tool = item.GetComponent<RectTransform>();
+        switch (type)
+        {
+            case ItemType.Cream:
+
+                if (!gameManager.creamApplied)
+                    StartCoroutine(ApplyCream(item));
+                break;
+
+            case ItemType.Eyeshadow:
+                if (tool == null) return;
+                StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyShadow(MakeupManager.Instance.selectedSprite)));
+                break;
+
+            case ItemType.Lipstick:
+                if (tool == null) return;
+                //здесь без делегата
+                StartCoroutine(ApplyLipstiсAndUnlock(() => girlManager.ApplyLipstick(MakeupManager.Instance.selectedSprite)));
+                break;
+
+            case ItemType.Brush:
+                if (tool == null) return;
+                StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyBlush(MakeupManager.Instance.selectedSprite)));
+                break;
+        }
+    }
+    private IEnumerator PlayLipsticSequence(RectTransform lipstic)
+    {
+        InteractableObject interactable = lipstic.gameObject.GetComponent<InteractableObject>();
+        if (interactable != null) interactable.isInteractive = false;
+        lipstic.GetComponent<Button>().interactable = false;
+        startPos = lipstic.anchoredPosition;
+        yield return StartCoroutine(IncreaseScale(lipstic, scaleTo: 1.2f));
+        yield return StartCoroutine(MoveTo(lipstic, handZone, null, 0.5f));
+        lipstic.GetComponent<ButtonColor>().SetInteractableObjectButton(true);
     }
 
     private IEnumerator PlayToolSequence(RectTransform tool)
     {
+        InteractableObject interactable = tool.gameObject.GetComponent<InteractableObject>();
+        if (interactable != null) interactable.isInteractive = false;
         startPos = tool.anchoredPosition;
         yield return StartCoroutine(IncreaseScale(tool, scaleTo: 1.2f));
         yield return StartCoroutine(MoveTo(tool, MakeupManager.Instance.button, null, 0.5f));
         yield return StartCoroutine(MoveRightLeftUI(tool, 150f, 50f));
         yield return StartCoroutine(MoveTo(tool, handZone, null, 0.5f));
-        tool.gameObject.GetComponent<InteractableObject>().isInteractive = true;
+        interactable.isInteractive = true;
     }
-    public void MoveToHandCreamZone(RectTransform tool)
+    public void PlayToolToFace(RectTransform tool)
     {
-        StartCoroutine(MoveTo(tool, creamZone, null, 0.5f));
+        StartCoroutine(PlayToolSequence(tool));
     }
-    private IEnumerator ApplyLipstic(RectTransform rectTransform, Vector2 targetPos, float duration = 1f)
+    public void PlayLipstic(RectTransform lipstic)
     {
-        //куда таргет?
-        rectTransform.GetComponent<Button>().enabled = false;
-        yield return StartCoroutine(MoveTo(rectTransform, handZone, null, duration));
-        rectTransform.GetComponent<InteractableObject>().enabled = true;
+        StartCoroutine(PlayLipsticSequence(lipstic));
     }
+
+    private IEnumerator ApplyLipstiсAndUnlock(Action action)
+    {
+        yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), lipZone, null, 0.7f));
+        yield return StartCoroutine(MoveRightLeftUI(tool, 150f, 30f));
+        action();
+        yield return StartCoroutine(MoveTo(tool, null, startPos, duration: 1f));
+        yield return StartCoroutine(IncreaseScale(tool, scaleTo: 1f));
+        tool.GetComponent<ButtonColor>().SetInteractableObjectButton(false);
+    }
+
     private IEnumerator ApplyAndUnlock(Action action)
     {
         tool.GetComponent<InteractableObject>().isInteractive = false;
-        yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), faceZone, null, 0.3f));
+        yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), faceZone, null, 0.5f));
         yield return StartCoroutine(MoveRightLeftUI(tool, 220f, 50f));
         action();
         yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), null, startPos, 1f));
         yield return StartCoroutine(IncreaseScale(tool, scaleTo: 1f));
 
         UIcontroller.Instance.EnableBook(true);
+    }
+    public void MoveToHandCreamZone(RectTransform tool)
+    {
+        StartCoroutine(MoveTo(tool, creamZone, null, 0.5f));
     }
 
     public IEnumerator MoveTo(RectTransform item, RectTransform target = null, Vector2? targetPosition = null, float duration = 1f)
@@ -111,34 +159,6 @@ public class ItemAnimator : MonoBehaviour
         target.localScale = endScale;
     }
 
-    public void HandleDropAction(ItemType type, GameObject item)
-    {
-        tool = item.GetComponent<RectTransform>();
-        switch (type)
-        {
-            case ItemType.Cream:
-
-                if (!gameManager.creamApplied)
-                    StartCoroutine(ApplyCream(item));
-                break;
-
-            case ItemType.Eyeshadow:
-                if (tool == null) return;
-                StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyShadow(MakeupManager.Instance.selectedSprite)));
-                break;
-
-            case ItemType.Lipstick:
-                if (tool == null) return;
-                StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyLipstick(MakeupManager.Instance.selectedSprite)));
-                break;
-
-            case ItemType.Brush:
-                if (tool == null) return;
-                StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyBlush(MakeupManager.Instance.selectedSprite)));
-                break;
-        }
-    }
-
     private IEnumerator ApplyCream(GameObject item)
     {
         girlManager.RemoveAcne();
@@ -179,7 +199,7 @@ public class ItemAnimator : MonoBehaviour
         RectTransform spongeRect = SpongeController.Instance.spongeRect;
         SpongeController.Instance.usingSponge = true;
         yield return StartCoroutine(MoveTo(spongeRect, faceZone, null, 1f));
-        yield return StartCoroutine(RotateInCircle(spongeRect, 360f, 40f));
+        yield return StartCoroutine(RotateInCircle(spongeRect, 690f, 40f));
         yield return StartCoroutine(MoveTo(spongeRect, null, SpongeController.Instance.startPos, 1f));
         //particlesystem
         yield return new WaitForSeconds(1f);
