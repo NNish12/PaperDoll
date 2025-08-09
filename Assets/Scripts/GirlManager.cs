@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -7,9 +6,7 @@ public class GirlManager : MonoBehaviour
 {
     public static GirlManager Instance;
 
-    [Header("Face state")]
-    // public GameObject Acne;
-    // public GameObject Dirt;
+    [Header("Face states")]
     private SpongeController sponge;
     [SerializeField] private SpriteRenderer srBlush;
     [SerializeField] private SpriteRenderer srLips;
@@ -147,8 +144,6 @@ public class GirlManager : MonoBehaviour
             UIcontroller.Instance.SetActiveButton(isActiveButton);
         }
         isFirstStart = false;
-
-
     }
 
     private IEnumerator FadeIn(SpriteRenderer sr, float targetAlpha, Sprite sprite = null, float duration = 1.5f, bool isNullSprite = true)
@@ -224,6 +219,5 @@ public class GirlManager : MonoBehaviour
             }
         }
     }
-
 
 }

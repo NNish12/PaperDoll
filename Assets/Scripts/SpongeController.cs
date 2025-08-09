@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,10 +8,6 @@ public class SpongeController : MonoBehaviour
     public Vector2 startPos;
     private Button button;
     public bool usingSponge = false;
-    void Start()
-    {
-
-    }
     public void SetSpongeInteractable(bool isOn) => button.interactable = isOn;
     private void Awake()
     {
@@ -39,6 +33,4 @@ public class SpongeController : MonoBehaviour
             UIcontroller.Instance.EnableBook(true);
         }
     }
-
-    public void Init() { }
 }
