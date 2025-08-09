@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class EntryPoint : MonoBehaviour
@@ -10,7 +9,6 @@ public class EntryPoint : MonoBehaviour
     public ItemAnimator itemActionAnimator;
     public FaceZone faceZone;
     public UIcontroller uiController;
-    public SpongeController spongeController;
     public UIRaycastDebugger raycaster;
     private void Awake()
     {
@@ -19,8 +17,6 @@ public class EntryPoint : MonoBehaviour
         uiController.Init();
         makeupManager.Init();
         girlManager.Init();
-        spongeController.Init();
-
         faceZone.Init();
         itemActionAnimator.Init();
         raycaster.Init();
