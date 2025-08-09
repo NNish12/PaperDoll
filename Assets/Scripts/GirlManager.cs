@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Net.NetworkInformation;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 
 
@@ -64,7 +66,7 @@ public class GirlManager : MonoBehaviour
     public void ApplyShadow(Sprite shadow)
     {
         if (shadow != null)
-            srEyeshadow.sprite = shadow;
+            StartCoroutine(FadeIn(shadow, srEyeshadow));
         CheckCosmetic();
     }
 
@@ -77,7 +79,7 @@ public class GirlManager : MonoBehaviour
     public void ApplyLipstick(Sprite lips)
     {
         if (lips != null)
-            srLips.sprite = lips;
+            StartCoroutine(FadeIn(lips, srLips));
         CheckCosmetic();
     }
     public void ClearLipstick()
@@ -89,7 +91,10 @@ public class GirlManager : MonoBehaviour
     public void ApplyBlush(Sprite blush)
     {
         if (blush != null)
-            srBlush.sprite = blush;
+        {
+            StartCoroutine(FadeIn(blush, srBlush));
+        }
+
         CheckCosmetic();
     }
     public void ClearBlush()
@@ -127,5 +132,23 @@ public class GirlManager : MonoBehaviour
         Debug.Log(srBlush.sprite != null && srEyeshadow.sprite != null && srLips.sprite != null);
         bool isActiveButton = srBlush.sprite != null && srEyeshadow.sprite != null && srLips.sprite != null;
         UIcontroller.Instance.SetActiveButton(isActiveButton);
+    }
+    private IEnumerator FadeIn(Sprite sprite, SpriteRenderer sr, float duration = 1.5f)
+    {
+        sr.sprite = sprite;
+        Color color = sr.color;
+        color.a = 0f;
+        sr.color = color;
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            color.a = Mathf.Clamp01(elapsed / duration);
+            sr.color = color;
+            yield return null;
+        }
+        color.a = 1f;
+        sr.color = color;
     }
 }
