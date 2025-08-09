@@ -183,7 +183,7 @@ public class ItemAnimator : MonoBehaviour
         girlManager.RemoveAcne();
         item.GetComponent<InteractableObject>().ReturnToStartPos();
         item.GetComponent<InteractableObject>().isInteractive = false;
-        item.GetComponent<Image>().raycastTarget = false;
+        // item.GetComponent<Image>().raycastTarget = false;
         UIcontroller.Instance.EnableBook(true);
         yield return new WaitForSeconds(0.2f);
     }

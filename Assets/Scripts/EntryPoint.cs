@@ -12,19 +12,18 @@ public class EntryPoint : MonoBehaviour
     public UIcontroller uiController;
     public SpongeController spongeController;
     public UIRaycastDebugger raycaster;
-    public ParticleSystemController particleSystemController;
     private void Awake()
     {
         SetInstance();
         gameManager.Init();
+        uiController.Init();
+        makeupManager.Init();
         girlManager.Init();
         spongeController.Init();
-        makeupManager.Init();
+
         faceZone.Init();
-        uiController.Init();
         itemActionAnimator.Init();
         raycaster.Init();
-        // particleSystemController.Init();
     }
     private void SetInstance()
     {

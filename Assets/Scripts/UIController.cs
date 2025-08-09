@@ -9,6 +9,9 @@ public class UIcontroller : MonoBehaviour
     [SerializeField] private List<Tab> tabs;
     [SerializeField] private List<Page> pages;
     [SerializeField] private List<Button> uiButtons;
+    [SerializeField] private Button enableButton;
+    [SerializeField] private Button disableButton;
+
     private int currentIndex = -1;
     public Vector2 MousePos { get; set; }
 
@@ -36,7 +39,7 @@ public class UIcontroller : MonoBehaviour
         currentIndex = index;
         MakeupManager.Instance.ResetSelectedSprite();
     }
-    
+
     public void Init()
     {
         if (Instance != null && Instance != this)
@@ -52,5 +55,11 @@ public class UIcontroller : MonoBehaviour
     {
         GameManager.Instance.CanInteractWithPalette = isOn;
         nonInteractableField.enabled = !isOn;
+    }
+
+    public void SetActiveButton(bool isOn)
+    {
+        enableButton.gameObject.SetActive(isOn);
+        disableButton.gameObject.SetActive(!isOn);
     }
 }

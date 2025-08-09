@@ -52,7 +52,7 @@ public class GirlManager : MonoBehaviour
     {
         SetNullMakeUp();
         RemoveMakeup();
-        ReturnAcneAdnDirt();
+        ReturnAcneAndDirt();
     }
     public void RemoveAcne()
     {
@@ -90,7 +90,6 @@ public class GirlManager : MonoBehaviour
     {
         if (blush != null)
             srBlush.sprite = blush;
-        // ContainsCosmetics = true;
         CheckCosmetic();
     }
     public void ClearBlush()
@@ -108,27 +107,25 @@ public class GirlManager : MonoBehaviour
         ClearShadow();
         ContainsCosmetics = false;
     }
-    public void ReturnAcneAdnDirt()
+    public void ReturnAcneAndDirt()
     {
         Acne.SetActive(true);
         Dirt.SetActive(true);
+        UIcontroller.Instance.EnableBook(false);
+        GameManager.Instance.creamApplied = false;
     }
-    //тут дублирование
     public void CheckCosmetic()
     {
-        //тут объект может быть null
         if (srBlush.sprite != null || srEyeshadow.sprite != null || srLips.sprite != null)
         {
             ContainsCosmetics = true;
-            // sponge.SetSpongeInteractable(false);
         }
         else
         {
             ContainsCosmetics = false;
-            // sponge.SetSpongeInteractable(true);
         }
-
+        Debug.Log(srBlush.sprite != null && srEyeshadow.sprite != null && srLips.sprite != null);
+        bool isActiveButton = srBlush.sprite != null && srEyeshadow.sprite != null && srLips.sprite != null;
+        UIcontroller.Instance.SetActiveButton(isActiveButton);
     }
-
-
 }
