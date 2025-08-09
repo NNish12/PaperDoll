@@ -17584,11 +17584,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab7f5196f65c84c9a9b2a778374995f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Acne: {fileID: 668594742}
-  Dirt: {fileID: 107254108}
   srBlush: {fileID: 1237371932}
   srLips: {fileID: 64488664}
   srEyeshadow: {fileID: 542303713}
+  srAcne: {fileID: 668594743}
+  srDirt: {fileID: 107254110}
 --- !u!224 &2047897562 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5140254653435671428, guid: 909d5b8c9b8e744c98bdc6f6b98b7a43, type: 3}
