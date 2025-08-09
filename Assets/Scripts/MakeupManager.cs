@@ -38,7 +38,6 @@ public class MakeupManager : MonoBehaviour
         if (!GameManager.Instance.CanInteractWithPalette) return;
 
         selectedType = colorButton.itemType;
-        Debug.Log(selectedType);
         button = colorButton.GetComponent<RectTransform>();
 
         switch (selectedType)

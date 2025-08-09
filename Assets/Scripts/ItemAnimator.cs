@@ -95,8 +95,8 @@ public class ItemAnimator : MonoBehaviour
     private IEnumerator ApplyLipstiсAndUnlock(Action action)
     {
         yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), lipZone, null, 0.7f));
-        yield return StartCoroutine(MoveRightLeftUI(tool, 150f, 15f, count: 2));
         action();
+        yield return StartCoroutine(MoveRightLeftUI(tool, 150f, 15f, count: 2));
         yield return StartCoroutine(MoveTo(tool, null, startPos, duration: 1f));
         yield return StartCoroutine(IncreaseScale(tool, scaleTo: 1f));
         tool.GetComponent<ButtonColor>().SetInteractableObjectButton(false);
@@ -108,8 +108,9 @@ public class ItemAnimator : MonoBehaviour
         tool.GetComponent<InteractableObject>().isInteractive = false;
 
         yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), currentType == ItemType.Brush ? brushZone : eyebshadowZone, null, 0.5f));
-        yield return StartCoroutine(MoveRightLeftUI(tool, 680f, 80f, count: 2));
         action();
+        yield return StartCoroutine(MoveRightLeftUI(tool, 680f, 80f, count: 2));
+
         yield return StartCoroutine(MoveTo(tool.GetComponent<RectTransform>(), null, startPos, 1f));
         yield return StartCoroutine(IncreaseScale(tool, scaleTo: 1f));
 
