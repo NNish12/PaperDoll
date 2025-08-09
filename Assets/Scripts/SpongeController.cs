@@ -36,7 +36,6 @@ public class SpongeController : MonoBehaviour
             UIcontroller.Instance.EnableBook(false);
             SetSpongeInteractable(false);
             ItemAnimator.Instance.ApplySponge();
-            GirlManager.Instance.RemoveMakeup();
             UIcontroller.Instance.EnableBook(true);
         }
     }

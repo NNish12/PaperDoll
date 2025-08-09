@@ -12,6 +12,7 @@ public class EntryPoint : MonoBehaviour
     public UIcontroller uiController;
     public SpongeController spongeController;
     public UIRaycastDebugger raycaster;
+    public ParticleSystemController particleSystemController;
     private void Awake()
     {
         SetInstance();
@@ -23,6 +24,7 @@ public class EntryPoint : MonoBehaviour
         uiController.Init();
         itemActionAnimator.Init();
         raycaster.Init();
+        // particleSystemController.Init();
     }
     private void SetInstance()
     {

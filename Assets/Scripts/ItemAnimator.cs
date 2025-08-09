@@ -8,6 +8,7 @@ public class ItemAnimator : MonoBehaviour
     public static ItemAnimator Instance;
     private GameManager gameManager;
     private GirlManager girlManager;
+    private ParticleSystemController particleSystemController;
     public RectTransform handZone;
     public RectTransform creamZone;
     public RectTransform faceZone;
@@ -17,6 +18,7 @@ public class ItemAnimator : MonoBehaviour
     private RectTransform tool;
     private Vector2 startPos;
     private ItemType currentType;
+
     public void Init()
     {
         if (Instance != null && Instance != this)
@@ -27,6 +29,7 @@ public class ItemAnimator : MonoBehaviour
         Instance = this;
         gameManager = GameManager.Instance;
         girlManager = GirlManager.Instance;
+        particleSystemController = ParticleSystemController.Instance;
     }
 
     public void HandleDropAction(ItemType type, GameObject item)
@@ -50,7 +53,7 @@ public class ItemAnimator : MonoBehaviour
                 if (tool == null) return;
                 StartCoroutine(ApplyAndUnlock(() => girlManager.ApplyBlush(MakeupManager.Instance.selectedSprite)));
                 break;
-                
+
             case ItemType.Lipstick:
                 if (tool == null) return;
                 StartCoroutine(ApplyLipstiсAndUnlock(() => girlManager.ApplyLipstick(MakeupManager.Instance.selectedSprite)));
@@ -176,6 +179,7 @@ public class ItemAnimator : MonoBehaviour
 
     private IEnumerator ApplyCream(GameObject item)
     {
+        particleSystemController.SetPlayBubbles();
         girlManager.RemoveAcne();
         item.GetComponent<InteractableObject>().ReturnToStartPos();
         item.GetComponent<InteractableObject>().isInteractive = false;
@@ -218,9 +222,11 @@ public class ItemAnimator : MonoBehaviour
         RectTransform spongeRect = SpongeController.Instance.spongeRect;
         SpongeController.Instance.usingSponge = true;
         yield return StartCoroutine(MoveTo(spongeRect, faceZone, null, 1f));
+        particleSystemController.SetPlayBubbles();
+        GirlManager.Instance.RemoveMakeup();
         yield return StartCoroutine(RotateInCircle(spongeRect, 690f, 40f));
         yield return StartCoroutine(MoveTo(spongeRect, null, SpongeController.Instance.startPos, 1f));
-        //particlesystem
+
         yield return new WaitForSeconds(0.2f);
         SpongeController.Instance.usingSponge = false;
     }
