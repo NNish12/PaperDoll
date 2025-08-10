@@ -57,9 +57,8 @@ public class UIcontroller : MonoBehaviour
         nonInteractableField.enabled = !isOn;
     }
 
-    public void SetActiveButton(bool isOn)
+    public void Exit()
     {
-        enableButton.gameObject.SetActive(isOn);
-        disableButton.gameObject.SetActive(!isOn);
+        Application.Quit();
     }
 }
