@@ -12,12 +12,12 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
     private CanvasGroup canvasGroup;
     private EventSystem eventSystem;
     private Vector2 startPos;
+    private Vector3 dragOffset;
 
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
-
         eventSystem = EventSystem.current;
     }
     public void OnPointerDown(PointerEventData eventData)
@@ -41,20 +41,27 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
         if (!isInteractive) return;
         transform.SetAsLastSibling();
         canvasGroup.blocksRaycasts = false;
+
+        RectTransform parentRect = rectTransform.parent.GetComponent<RectTransform>();
+        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(parentRect, eventData.position, null, out Vector3 globalMousePos))
+        {
+            dragOffset = rectTransform.position - globalMousePos;
+        }
+        else
+        {
+            dragOffset = Vector3.zero;
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
         if (!isInteractive) return;
+
         RectTransform parentRect = rectTransform.parent.GetComponent<RectTransform>();
-
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            parentRect,
-            eventData.position,
-            eventData.pressEventCamera,
-            out Vector2 localPoint);
-
-        rectTransform.anchoredPosition = localPoint;
+        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(parentRect, eventData.position, null, out Vector3 globalMousePos))
+        {
+            rectTransform.position = globalMousePos + dragOffset;
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -63,7 +70,6 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
 
         if (FaceZone.IsOverZone(eventData.position))
         {
-
             isInteractive = false;
             ItemAnimator.Instance.HandleDropAction(itemType, this.gameObject);
         }

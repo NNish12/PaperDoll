@@ -13,7 +13,6 @@ public class GirlManager : MonoBehaviour
     [SerializeField] private SpriteRenderer srEyeshadow;
     [SerializeField] private SpriteRenderer srAcne;
     [SerializeField] private SpriteRenderer srDirt;
-    private bool isFirstStart = true;
     private bool containsCosmetics = false;
     public bool ContainsCosmetics
     {
@@ -138,12 +137,6 @@ public class GirlManager : MonoBehaviour
             ContainsCosmetics = false;
         }
 
-        if (!isFirstStart)
-        {
-            bool isActiveButton = srBlush.sprite != null && srEyeshadow.sprite != null && srLips.sprite != null;
-            UIcontroller.Instance.SetActiveButton(isActiveButton);
-        }
-        isFirstStart = false;
     }
 
     private IEnumerator FadeIn(SpriteRenderer sr, float targetAlpha, Sprite sprite = null, float duration = 1.5f, bool isNullSprite = true)
