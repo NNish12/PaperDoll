@@ -42,8 +42,7 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
         transform.SetAsLastSibling();
         canvasGroup.blocksRaycasts = false;
 
-        RectTransform parentRect = rectTransform.parent.GetComponent<RectTransform>();
-        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(parentRect, eventData.position, null, out Vector3 globalMousePos))
+        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, eventData.position, null, out Vector3 globalMousePos))
         {
             dragOffset = rectTransform.position - globalMousePos;
         }
@@ -57,8 +56,7 @@ public class InteractableObject : MonoBehaviour, IPointerDownHandler, IBeginDrag
     {
         if (!isInteractive) return;
 
-        RectTransform parentRect = rectTransform.parent.GetComponent<RectTransform>();
-        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(parentRect, eventData.position, null, out Vector3 globalMousePos))
+        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, eventData.position, null, out Vector3 globalMousePos))
         {
             rectTransform.position = globalMousePos + dragOffset;
         }
